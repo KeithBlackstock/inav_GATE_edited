@@ -1,0 +1,22 @@
+name: Build INAV GATED
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build ruby
+          wget -qO- https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz | tar xJ
+          echo "$PWD/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
+      - name: Configure
+        run: cmake -B build -G Ninja -DTARGET=FLYINGRCF4WINGMINI_NOT_RECOMMENDED
+      - name: Build
+        run: cmake --build build --target FLYINGRCF4WINGMINI_NOT_RECOMMENDED -j$(nproc)
+      - name: Upload hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: inav-gated-hex
+          path: build/src/main/inav_*.hex
