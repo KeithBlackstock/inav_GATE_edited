@@ -1512,6 +1512,16 @@ Yaw Iterm is frozen when bank angle is above this threshold [degrees]. This solv
 
 ---
 
+### gated_max_bank_angle
+
+Maximum bank angle (degrees) allowed in GATED mode [5-85]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 30 | 5 | 85 |
+
+---
+
 ### geozone_avoid_altitude_range
 
 Altitude range in which an attempt is made to avoid a geozone upwards
