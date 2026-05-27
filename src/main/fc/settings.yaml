@@ -4507,3 +4507,14 @@ groups:
         field: noWayHomeAction
         table: geozone_rth_no_way_home
         type: uint8_t
+
+  - name: PG_GATED_CONFIG
+    headers: ["flight/gated_mode.h"]
+    type: gatedConfig_t
+    members:
+      - name: gated_max_bank_angle
+        description: "Maximum bank angle (degrees) allowed in GATED mode [5-85]"
+        default_value: 30
+        field: maxBankAngle
+        min: 5
+        max: 85

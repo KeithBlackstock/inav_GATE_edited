@@ -88,6 +88,7 @@
 #include "flight/pid.h"
 #include "flight/imu.h"
 #include "flight/rate_dynamics.h"
+#include "flight/gated_mode.h"
 
 #include "flight/failsafe.h"
 #include "flight/power_limits.h"
@@ -429,6 +430,8 @@ static void processPilotAndFailSafeActions(float dT)
             DEBUG_SET(DEBUG_RATE_DYNAMICS, 5, rcCommand[YAW]);
 
         }
+
+        applyGatedRollAttenuation();
 
         //Compute THROTTLE command
         rcCommand[THROTTLE] = throttleStickMixedValue();

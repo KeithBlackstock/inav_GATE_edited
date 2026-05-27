@@ -360,6 +360,8 @@ main_sources(COMMON_SRC
     flight/ez_tune.h
     flight/adaptive_filter.c
     flight/adaptive_filter.h
+    flight/gated_mode.c
+    flight/gated_mode.h
 
     io/adsb.c
     io/beeper.c
