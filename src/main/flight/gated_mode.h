@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pg/pg.h"
+#include "config/parameter_group.h"
 #include <stdint.h>
 
 typedef struct gatedConfig_s {

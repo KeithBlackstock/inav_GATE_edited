@@ -4,7 +4,7 @@
 #include "fc/rc_modes.h"
 #include "flight/imu.h"
 #include "common/maths.h"
-#include "pg/pg.h"
+#include "config/parameter_group.h"
 #include "config/parameter_group_ids.h"
 
 PG_REGISTER_WITH_RESET_TEMPLATE(gatedConfig_t, gatedConfig, PG_GATED_CONFIG, 0,

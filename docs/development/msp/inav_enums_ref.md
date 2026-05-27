@@ -1169,7 +1169,8 @@
 | `BOXGIMBALRLOCK` | 57 |  |
 | `BOXGIMBALCENTER` | 58 |  |
 | `BOXGIMBALHTRK` | 59 |  |
-| `CHECKBOX_ITEM_COUNT` | 60 |  |
+| `BOXGATED` | 60 |  |
+| `CHECKBOX_ITEM_COUNT` | 61 |  |
 
 ---
 ## <a id="enum-busindex_e"></a>`busIndex_e`

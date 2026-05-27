@@ -638,7 +638,8 @@
         "BOXGIMBALRLOCK": "57",
         "BOXGIMBALCENTER": "58",
         "BOXGIMBALHTRK": "59",
-        "CHECKBOX_ITEM_COUNT": "60"
+        "BOXGATED": "60",
+        "CHECKBOX_ITEM_COUNT": "61"
     },
     "busIndex_e": {
         "_source": "inav/src/main/drivers/bus.h",
