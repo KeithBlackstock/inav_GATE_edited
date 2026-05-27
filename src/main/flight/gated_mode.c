@@ -7,7 +7,8 @@
 #include "config/parameter_group.h"
 #include "config/parameter_group_ids.h"
 
-PG_REGISTER_WITH_RESET_TEMPLATE(gatedConfig_t, gatedConfig, PG_GATED_CONFIG, 0,
+PG_REGISTER_WITH_RESET_TEMPLATE(gatedConfig_t, gatedConfig, PG_GATED_CONFIG, 0);
+PG_RESET_TEMPLATE(gatedConfig_t, gatedConfig,
     .maxBankAngle = 30
 );
 
