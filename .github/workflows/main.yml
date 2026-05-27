@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: KeithBlackstock/inav_GATE
+          repository: KeithBlackstock/inav_GATE_edited
       - name: Install dependencies
         run: |
           sudo apt update
