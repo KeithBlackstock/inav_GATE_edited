@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: KeithBlackstock/inav_GATE
       - name: Install dependencies
         run: |
           sudo apt update
