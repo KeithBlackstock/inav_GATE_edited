@@ -11,18 +11,17 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: external-configurator_mod
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install linux utils
+        run: choco install --force -y grep sed
+
       - name: Setup environment
         shell: bash
-        working-directory: .
         run: |
-          VERSION=$(node -p "require('./external-configurator_mod/package.json').version")
           BUILD_SUFFIX=ci-$(date '+%Y%m%d')-$(git rev-parse --short ${{ github.sha }})
+          VERSION=$(grep '"version"' external-configurator_mod/package.json | sed 's/.*"\([0-9][0-9]*\.[0-9]*\.[0-9]*\)".*/\1/')
           echo "BUILD_NAMEx64=INAV-Configurator-GATED_Windows64_${VERSION}_${BUILD_SUFFIX}" >> $GITHUB_ENV
 
       - uses: actions/setup-node@v4
@@ -43,19 +42,19 @@ jobs:
           command: cd external-configurator_mod && yarn install --foreground-scripts
           timeout_minutes: 10
           on_retry_command: rm -rfv external-configurator_mod/node_modules
-          working_directory: .
 
       - name: Build Windows x64
-        run: yarn run make -- --arch="x64"
+        working-directory: external-configurator_mod
+        run: yarn run make -- --arch=x64
 
       - name: Upload Windows x64 ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.BUILD_NAMEx64 }}_ZIP
+          name: "${{ env.BUILD_NAMEx64 }}_ZIP"
           path: external-configurator_mod/out/make/zip/win32/x64/*.zip
 
       - name: Upload Windows x64 MSI
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.BUILD_NAMEx64 }}_MSI
+          name: "${{ env.BUILD_NAMEx64 }}_MSI"
           path: external-configurator_mod/out/make/wix/x64/*.msi
