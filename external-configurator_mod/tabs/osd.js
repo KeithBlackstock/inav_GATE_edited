@@ -4324,3 +4324,5 @@ TABS.osd.cleanup = function (callback) {
 
     if (callback) callback();
 };
+
+export default TABS.osd;
