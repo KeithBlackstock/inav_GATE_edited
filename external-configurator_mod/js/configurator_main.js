@@ -130,6 +130,10 @@ $(function() {
                 var self = this,
                     tabClass = $(self).parent().prop('class');
 
+                if (!tabClass.startsWith('tab_')) {
+                    return;
+                }
+
                 var tabRequiresConnection = $(self).parent().hasClass('mode-connected');
 
                 var tab = tabClass.substring(4);
