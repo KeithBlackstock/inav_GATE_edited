@@ -4,7 +4,7 @@ import { marked } from 'marked';
 import semver from 'semver';
 
 import i18n from './../js/localization';
-import { GUI, TABS } from './../js/gui';
+import GUI from './../js/gui';
 import MSP from './../js/msp';
 import MSPCodes from './../js/msp/MSPCodes';
 import FC from './../js/fc';
@@ -21,6 +21,7 @@ import mspDeduplicationQueue from './../js/msp/mspDeduplicationQueue';
 import store from './../js/store';
 import dialog from '../js/dialog.js';
 
+const TABS = {};
 TABS.firmware_flasher = {};
 TABS.firmware_flasher.initialize = function (callback) {
 
