@@ -7,7 +7,8 @@ import jBox from 'jbox';
 import { debounce } from 'throttle-debounce';
 
 import FC from './../js/fc';
-import { GUI, TABS } from './../js/gui';
+import GUI from './../js/gui';
+const TABS = {};
 import MSP from './../js/msp';
 import MSPCodes from './../js/msp/MSPCodes';
 import mspHelper from './../js/msp/MSPHelper';
