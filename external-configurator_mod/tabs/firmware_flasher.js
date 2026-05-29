@@ -892,3 +892,5 @@ TABS.firmware_flasher.closeTempConnection = function() {
     CONFIGURATOR.connection.disconnect();
     MSP.disconnect_cleanup();
 };
+
+export default TABS.firmware_flasher;
