@@ -1520,6 +1520,36 @@ Maximum bank angle (degrees) allowed in GATED mode [5-85]
 | --- | --- | --- |
 | 30 | 5 | 85 |
 
+
+### attitude_rate_roll
+
+Roll rate for ATTITUDE mode as percentage of max throw [0-100]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 50 | 0 | 100 |
+
+---
+
+### attitude_rate_pitch
+
+Pitch rate for ATTITUDE mode as percentage of max throw [0-100]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 50 | 0 | 100 |
+
+---
+
+### attitude_rate_yaw
+
+Yaw rate for ATTITUDE mode as percentage of max throw [0-100]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 50 | 0 | 100 |
+
+---
 ---
 
 ### geozone_avoid_altitude_range

@@ -110,6 +110,7 @@ static const box_t boxes[CHECKBOX_ITEM_COUNT + 1] = {
     { .boxId = BOXGIMBALCENTER,     .boxName = "GIMBAL CENTER",     .permanentId = 67 },
     { .boxId = BOXGIMBALHTRK,       .boxName = "GIMBAL HEADTRACKER", .permanentId = 68 },
     { .boxId = BOXGATED,            .boxName = "GATED",             .permanentId = 69 },
+    { .boxId = BOXATTITUDE,         .boxName = "ATTITUDE",          .permanentId = 70 },
     { .boxId = CHECKBOX_ITEM_COUNT, .boxName = NULL,                .permanentId = 0xFF }
 };
 

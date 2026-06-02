@@ -4517,4 +4517,27 @@ groups:
         default_value: 30
         field: maxBankAngle
         min: 5
+
+  - name: PG_ATTITUDE_CONFIG
+    headers: ["flight/attitude_mode.h"]
+    type: attitudeConfig_t
+    members:
+      - name: attitude_rate_roll
+        description: "Roll rate for ATTITUDE mode as percentage of max throw [0-100]"
+        default_value: 50
+        field: rate_roll
+        min: 0
+        max: 100
+      - name: attitude_rate_pitch
+        description: "Pitch rate for ATTITUDE mode as percentage of max throw [0-100]"
+        default_value: 50
+        field: rate_pitch
+        min: 0
+        max: 100
+      - name: attitude_rate_yaw
+        description: "Yaw rate for ATTITUDE mode as percentage of max throw [0-100]"
+        default_value: 50
+        field: rate_yaw
+        min: 0
+        max: 100
         max: 85

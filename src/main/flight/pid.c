@@ -1273,12 +1273,12 @@ void FAST_CODE pidController(float dT)
 #endif
     }
 
-    // Step 3: Run control for ANGLE_MODE, HORIZON_MODE and ANGLEHOLD_MODE
+    // Step 3: Run control for ANGLE_MODE, HORIZON_MODE, ATTITUDE_MODE and ANGLEHOLD_MODE
     const float horizonRateMagnitude = FLIGHT_MODE(HORIZON_MODE) ? calcHorizonRateMagnitude() : 0.0f;
     angleHoldIsLevel = false;
 
     for (uint8_t axis = FD_ROLL; axis <= FD_PITCH; axis++) {
-        if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(ANGLEHOLD_MODE) || isFlightAxisAngleOverrideActive(axis)) {
+        if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(ATTITUDE_MODE) || FLIGHT_MODE(ANGLEHOLD_MODE) || isFlightAxisAngleOverrideActive(axis)) {
             // If axis angle override, get the correct angle from Logic Conditions
             float angleTarget = getFlightAxisAngleOverride(axis, computePidLevelTarget(axis));
 
@@ -1291,9 +1291,16 @@ void FAST_CODE pidController(float dT)
                 updateAngleHold(&angleTarget, axis);
             }
 
-            // Apply the Level PID controller
-            pidLevel(angleTarget, &pidState[axis], axis, horizonRateMagnitude, dT);
-            canUseFpvCameraMix = false;     // FPVANGLEMIX is incompatible with ANGLE/HORIZON
+            // Apply the Level PID controller (cascaded for ANGLE/HORIZON, direct for ATTITUDE)
+            if (FLIGHT_MODE(ATTITUDE_MODE)) {
+                // Direct attitude control - apply PID directly to angle error
+                // TODO: Implement pidAttitude() function for non-cascaded control
+                pidLevel(angleTarget, &pidState[axis], axis, 0.0f, dT);
+            } else {
+                // Cascaded control for ANGLE and HORIZON modes
+                pidLevel(angleTarget, &pidState[axis], axis, horizonRateMagnitude, dT);
+            }
+            canUseFpvCameraMix = false;     // FPVANGLEMIX is incompatible with ANGLE/HORIZON/ATTITUDE
         } else {
             restartAngleHoldMode = true;
         }
