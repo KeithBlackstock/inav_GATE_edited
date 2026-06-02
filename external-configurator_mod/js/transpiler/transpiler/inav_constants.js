@@ -164,6 +164,7 @@ const FLIGHT_MODE = {
   ACRO: 14,
   WAYPOINT_MISSION: 15,
   ANGLEHOLD: 16,
+  ATTITUDE: 17,
 };
 
 /**

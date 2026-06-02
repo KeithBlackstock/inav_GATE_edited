@@ -545,6 +545,12 @@ export default {
         desc: 'Angle hold mode is active',
         readonly: true,
         inavOperand: { type: OPERAND_TYPE.FLIGHT_MODE, value: FLIGHT_MODE.ANGLEHOLD }
+      },
+      attitude: {
+        type: 'boolean',
+        desc: 'Attitude mode is active',
+        readonly: true,
+        inavOperand: { type: OPERAND_TYPE.FLIGHT_MODE, value: FLIGHT_MODE.ATTITUDE }
       }
     }
   }

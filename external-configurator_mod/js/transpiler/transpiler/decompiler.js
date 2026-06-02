@@ -52,7 +52,8 @@ class Decompiler {
       [FLIGHT_MODE.USER4]: 'user4',
       [FLIGHT_MODE.ACRO]: 'acro',
       [FLIGHT_MODE.WAYPOINT_MISSION]: 'waypointMission',
-      [FLIGHT_MODE.ANGLEHOLD]: 'anglehold'
+      [FLIGHT_MODE.ANGLEHOLD]: 'anglehold',
+      [FLIGHT_MODE.ATTITUDE]: 'attitude'
     };
 
     // Initialize helper classes with dependency injection
