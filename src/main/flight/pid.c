@@ -723,6 +723,8 @@ static void pidLevel(const float angleTarget, pidState_t *pidState, flight_dynam
         pidState->rateTarget = (1.0f - horizonRateMagnitude) * angleRateTarget + horizonRateMagnitude * pidState->rateTarget;
     } else {
         pidState->rateTarget = angleRateTarget;
+    }
+}
 
 /* Direct attitude PID controller for ATTITUDE mode - applies PID directly to attitude error
  * without cascaded rate loop. Uses throw percentage for rate scaling instead of deg/s.
@@ -744,7 +746,7 @@ static void pidAttitude(const float angleTarget, pidState_t *pidState, flight_dy
     
     // Scale the output based on throw percentage
     // This determines how aggressively the mode responds to attitude errors
-    const float maxOutput = ratePercent * pidProfile()->pidSumLimit;
+    const float maxOutput = ratePercent * pidState->pidSumLimit;
     
     // Classic PID controller applied directly to attitude error
     // P-term: Proportional to attitude error
@@ -770,8 +772,6 @@ static void pidAttitude(const float angleTarget, pidState_t *pidState, flight_dy
     // Set the rate target directly from PID output
     // This bypasses the cascaded rate controller
     pidState->rateTarget = pidOutput;
-}
-    }
 }
 
 /* Apply angular acceleration limit to rate target to limit extreme stick inputs to respect physical capabilities of the machine */
