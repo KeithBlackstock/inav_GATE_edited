@@ -48,6 +48,7 @@
 #include "flight/kalman.h"
 #include "flight/smith_predictor.h"
 #include "flight/adaptive_filter.h"
+#include "flight/attitude_mode.h"
 
 #include "io/gps.h"
 
@@ -722,6 +723,54 @@ static void pidLevel(const float angleTarget, pidState_t *pidState, flight_dynam
         pidState->rateTarget = (1.0f - horizonRateMagnitude) * angleRateTarget + horizonRateMagnitude * pidState->rateTarget;
     } else {
         pidState->rateTarget = angleRateTarget;
+
+/* Direct attitude PID controller for ATTITUDE mode - applies PID directly to attitude error
+ * without cascaded rate loop. Uses throw percentage for rate scaling instead of deg/s.
+ */
+static void pidAttitude(const float angleTarget, pidState_t *pidState, flight_dynamics_index_t axis, float dT)
+{
+    // Calculate attitude error in degrees
+    float angleErrorDeg = DECIDEGREES_TO_DEGREES(angleTarget - attitude.raw[axis]);
+    
+    // Get the rate configuration for this axis (0-100% of throw)
+    float ratePercent;
+    if (axis == FD_ROLL) {
+        ratePercent = (float)attitudeConfig()->rate_roll / 100.0f;
+    } else if (axis == FD_PITCH) {
+        ratePercent = (float)attitudeConfig()->rate_pitch / 100.0f;
+    } else {
+        ratePercent = (float)attitudeConfig()->rate_yaw / 100.0f;
+    }
+    
+    // Scale the output based on throw percentage
+    // This determines how aggressively the mode responds to attitude errors
+    const float maxOutput = ratePercent * pidProfile()->pidSumLimit;
+    
+    // Classic PID controller applied directly to attitude error
+    // P-term: Proportional to attitude error
+    float pTerm = angleErrorDeg * (pidBank()->pid[PID_LEVEL].P * FP_PID_LEVEL_P_MULTIPLIER);
+    
+    // I-term: Integral of attitude error (accumulates over time)
+    pidState->errorGyroIf += angleErrorDeg * (pidBank()->pid[PID_LEVEL].I * FP_PID_LEVEL_P_MULTIPLIER) * dT;
+    
+    // Apply I-term limiting
+    const float iTermLimit = maxOutput * 0.5f;  // Limit I-term to 50% of max output
+    pidState->errorGyroIf = constrainf(pidState->errorGyroIf, -iTermLimit, iTermLimit);
+    
+    // D-term: Derivative of attitude error (rate of change)
+    // Use gyro rate as derivative of attitude (negative because we want to oppose rotation)
+    float dTerm = -pidState->gyroRate * (pidBank()->pid[PID_LEVEL].D * FP_PID_LEVEL_P_MULTIPLIER);
+    
+    // Combine PID terms
+    float pidOutput = pTerm + pidState->errorGyroIf + dTerm;
+    
+    // Apply output limiting based on rate percentage
+    pidOutput = constrainf(pidOutput, -maxOutput, maxOutput);
+    
+    // Set the rate target directly from PID output
+    // This bypasses the cascaded rate controller
+    pidState->rateTarget = pidOutput;
+}
     }
 }
 
@@ -1293,9 +1342,8 @@ void FAST_CODE pidController(float dT)
 
             // Apply the Level PID controller (cascaded for ANGLE/HORIZON, direct for ATTITUDE)
             if (FLIGHT_MODE(ATTITUDE_MODE)) {
-                // Direct attitude control - apply PID directly to angle error
-                // TODO: Implement pidAttitude() function for non-cascaded control
-                pidLevel(angleTarget, &pidState[axis], axis, 0.0f, dT);
+                // Direct attitude control - apply PID directly to angle error without cascaded rate loop
+                pidAttitude(angleTarget, &pidState[axis], axis, dT);
             } else {
                 // Cascaded control for ANGLE and HORIZON modes
                 pidLevel(angleTarget, &pidState[axis], axis, horizonRateMagnitude, dT);
