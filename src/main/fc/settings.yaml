@@ -4517,6 +4517,7 @@ groups:
         default_value: 30
         field: maxBankAngle
         min: 5
+        max: 85
 
   - name: PG_ATTITUDE_CONFIG
     headers: ["flight/attitude_mode.h"]
