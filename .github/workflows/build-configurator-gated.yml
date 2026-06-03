@@ -7,6 +7,7 @@ on:
       - 'external-configurator_mod/**'
     branches:
       - main
+      - feature/attitude-mode
 
 jobs:
   build-windows:
