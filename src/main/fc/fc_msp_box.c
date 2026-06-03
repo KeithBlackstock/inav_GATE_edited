@@ -202,6 +202,7 @@ void initActiveBoxIds(void)
 
     if (sensors(SENSOR_ACC)) {
         ADD_ACTIVE_BOX(BOXGATED);
+        ADD_ACTIVE_BOX(BOXATTITUDE);
     }
 
     if (!feature(FEATURE_AIRMODE) && STATE(ALTITUDE_CONTROL)) {
