@@ -26,9 +26,8 @@ ATTITUDE mode functions similarly to ANGLE mode in terms of setting attitude tar
 ### Key Differences from ANGLE Mode:
 
 1. **Non-cascaded PID**: Applies PID directly to attitude error without an intermediate rate controller
-2. **Classic PID only**: Uses P, I, and D terms (no feedforward)
-3. **Throw percentage rates**: Uses 0-100% scaling instead of deg/s for more intuitive tuning
-4. **Direct response**: More immediate attitude correction without rate loop dynamics
+2. **Throw percentage rates**: Uses 0-100% scaling instead of deg/s for more intuitive tuning
+3. **Direct response**: More immediate attitude correction without rate loop dynamics
 
 ## Configuration
 
