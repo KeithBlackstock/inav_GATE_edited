@@ -362,6 +362,8 @@ main_sources(COMMON_SRC
     flight/adaptive_filter.h
     flight/gated_mode.c
     flight/gated_mode.h
+    flight/attitude_mode.c
+    flight/attitude_mode.h
 
     io/adsb.c
     io/beeper.c
