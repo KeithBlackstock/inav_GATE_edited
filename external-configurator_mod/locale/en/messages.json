@@ -6541,5 +6541,32 @@
     },
     "configurationGatedMaxBankAngleHelp": {
         "message": "Maximum bank angle (5-85°) allowed in GATED mode. Roll input is progressively reduced as this angle is approached, but opposite direction input remains available."
+    },
+    "auxiliaryModeATTITUDE": {
+        "message": "ATTITUDE"
+    },
+    "auxiliaryModeATTITUDEDescription": {
+        "message": "Direct attitude control mode. Applies PID directly to attitude error without an intermediate rate controller. More immediate response than ANGLE mode. Requires accelerometer."
+    },
+    "configurationAttitudeMode": {
+        "message": "ATTITUDE Mode Settings"
+    },
+    "configurationAttitudeRateRoll": {
+        "message": "Roll Rate"
+    },
+    "configurationAttitudeRateRollHelp": {
+        "message": "Roll responsiveness as a percentage (0-100%). Higher values produce more aggressive correction of roll attitude error."
+    },
+    "configurationAttitudeRatePitch": {
+        "message": "Pitch Rate"
+    },
+    "configurationAttitudeRatePitchHelp": {
+        "message": "Pitch responsiveness as a percentage (0-100%). Higher values produce more aggressive correction of pitch attitude error."
+    },
+    "configurationAttitudeRateYaw": {
+        "message": "Yaw Rate"
+    },
+    "configurationAttitudeRateYawHelp": {
+        "message": "Yaw responsiveness as a percentage (0-100%). Higher values produce more aggressive correction of yaw attitude error."
     }
 }
