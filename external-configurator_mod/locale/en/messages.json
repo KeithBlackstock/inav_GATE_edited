@@ -6540,7 +6540,7 @@
         "message": "DIVE Max Dive Angle"
     },
     "configurationDiveMaxDiveAngleHelp": {
-        "message": "Nose-down pitch angle (5-85°) at which throttle is cut entirely in DIVE mode. Throttle is proportionally reduced between 0° and this angle."
+        "message": "Nose-down pitch angle (0-90°) at which throttle is cut entirely in DIVE mode. Throttle is proportionally reduced between 0° and this angle. Setting 0° cuts throttle to idle at any nose-down pitch."
     },
     "auxiliaryModeGATED": {
         "message": "GATED"
