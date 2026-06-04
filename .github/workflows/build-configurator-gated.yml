@@ -1,4 +1,4 @@
-name: Build INAV Configurator (GATED)
+name: Build INAV Configurator (Mod)
 
 on:
   workflow_dispatch:
