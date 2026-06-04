@@ -19,18 +19,14 @@ void applyDiveThrottleAttenuation(void)
         return;
     }
 
-    const float maxAngle = (float)diveConfig()->maxDiveAngle;
-    if (maxAngle <= 0.0f) {
-        return;
-    }
-
-    // Negative pitch = nose down. Positive pitch gets full throttle passthrough.
+    // Positive pitch = nose down in INAV convention. Nose-up or level gets full throttle passthrough.
     const float pitchAngle = (float)attitude.values.pitch / 10.0f;
-    if (pitchAngle >= 0.0f) {
+    if (pitchAngle <= 0.0f) {
         return;
     }
 
-    const float scale = 1.0f - constrainf(-pitchAngle / maxAngle, 0.0f, 1.0f);
+    const float maxAngle = (float)diveConfig()->maxDiveAngle;
+    const float scale = (maxAngle <= 0.0f) ? 0.0f : 1.0f - constrainf(pitchAngle / maxAngle, 0.0f, 1.0f);
 
     // Attenuate only the throttle above idle; at scale=0 throttle falls to idle
     const int16_t idleThrottle = (int16_t)getThrottleIdleValue();
