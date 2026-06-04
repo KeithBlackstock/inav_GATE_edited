@@ -1,2 +1,0 @@
-target_stm32f722xe(HUMMINGBIRD_FC305)
-

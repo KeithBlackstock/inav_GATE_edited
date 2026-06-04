@@ -1,2 +1,0 @@
-target_stm32f722xe(MATEKF722SE)
-target_stm32f722xe(MATEKF722MINI)

@@ -1,2 +1,0 @@
-target_stm32h743xi(SEQUREH7)
-target_stm32h743xi(SEQUREH7V2)

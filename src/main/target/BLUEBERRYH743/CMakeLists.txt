@@ -1,2 +1,0 @@
-target_stm32h743xi(BLUEBERRYH743)
-target_stm32h743xi(BLUEBERRYH743HD)

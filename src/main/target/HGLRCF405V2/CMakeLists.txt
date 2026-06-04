@@ -1,1 +1,0 @@
-target_stm32f405xg(HGLRCF405V2)

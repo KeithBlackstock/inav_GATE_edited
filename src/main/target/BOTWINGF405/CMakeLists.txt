@@ -1,1 +1,0 @@
-target_stm32f405xg(BOTWINGF405 HSE_MHZ 24)

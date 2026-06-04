@@ -1,1 +1,0 @@
-target_stm32f722xe(FLYCOLORF7MINI)

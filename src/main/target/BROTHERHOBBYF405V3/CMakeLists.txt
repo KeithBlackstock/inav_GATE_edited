@@ -1,1 +1,0 @@
-target_stm32f405xg(BROTHERHOBBYF405V3)

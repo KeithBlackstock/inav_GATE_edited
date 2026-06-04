@@ -1,1 +1,0 @@
-target_stm32h743xi(JHEMCUH743HD)

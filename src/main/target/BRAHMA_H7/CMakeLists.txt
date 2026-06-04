@@ -1,1 +1,0 @@
-target_stm32h743xi(BRAHMA_H7)

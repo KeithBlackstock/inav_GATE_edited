@@ -1,1 +1,0 @@
-target_stm32f405xg(SPEEDYBEEF405AIO HSE_MHZ 8)

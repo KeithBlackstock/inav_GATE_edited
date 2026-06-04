@@ -1,1 +1,0 @@
-target_stm32h743xi(GEPRC_TAKER_H743)

@@ -1,2 +1,0 @@
-target_stm32f405xg(FLYWOOF405PRO)
-target_stm32f405xg(FLYWOOF405HD)

@@ -1,1 +1,0 @@
-target_stm32h743xi(KAKUTEH7WING HSE_MHZ 16)

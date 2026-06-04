@@ -1,1 +1,0 @@
-target_stm32f722xe(AIKONF7 SKIP_RELEASES)
