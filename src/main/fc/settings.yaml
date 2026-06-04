@@ -4518,3 +4518,14 @@ groups:
         field: maxBankAngle
         min: 5
         max: 85
+
+  - name: PG_DIVE_CONFIG
+    headers: ["flight/dive_mode.h"]
+    type: diveConfig_t
+    members:
+      - name: dive_max_dive_angle
+        description: "Nose-down pitch angle (degrees) at which throttle is cut entirely in DIVE mode [5-85]"
+        default_value: 30
+        field: maxDiveAngle
+        min: 5
+        max: 85

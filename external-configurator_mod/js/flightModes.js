@@ -308,12 +308,12 @@ var FLIGHT_MODES = [
     },
     {
         boxId: 61,
-        boxName: "ATTITUDE",
-        permanentId: 70
+        boxName: "LEVEL",
+        permanentId: 72
     },
     {
         boxId: 62,
-        boxName: "LEVEL",
+        boxName: "DIVE",
         permanentId: 71
     }
 ];

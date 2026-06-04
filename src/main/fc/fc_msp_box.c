@@ -110,7 +110,8 @@ static const box_t boxes[CHECKBOX_ITEM_COUNT + 1] = {
     { .boxId = BOXGIMBALCENTER,     .boxName = "GIMBAL CENTER",     .permanentId = 67 },
     { .boxId = BOXGIMBALHTRK,       .boxName = "GIMBAL HEADTRACKER", .permanentId = 68 },
     { .boxId = BOXGATED,            .boxName = "GATED",             .permanentId = 69 },
-    { .boxId = BOXLEVEL,            .boxName = "LEVEL",             .permanentId = 71 },
+    { .boxId = BOXLEVEL,            .boxName = "LEVEL",             .permanentId = 72 },
+    { .boxId = BOXDIVE,             .boxName = "DIVE",              .permanentId = 71 },
     { .boxId = CHECKBOX_ITEM_COUNT, .boxName = NULL,                .permanentId = 0xFF }
 };
 
@@ -203,6 +204,7 @@ void initActiveBoxIds(void)
 
     if (sensors(SENSOR_ACC)) {
         ADD_ACTIVE_BOX(BOXGATED);
+        ADD_ACTIVE_BOX(BOXDIVE);
     }
 
     if (!feature(FEATURE_AIRMODE) && STATE(ALTITUDE_CONTROL)) {
@@ -458,6 +460,7 @@ void packBoxModeFlags(boxBitmask_t * mspBoxModeFlags)
 #endif
     CHECK_ACTIVE_BOX(IS_ENABLED(IS_RC_MODE_ACTIVE(BOXANGLEHOLD)),       BOXANGLEHOLD);
     CHECK_ACTIVE_BOX(IS_ENABLED(IS_RC_MODE_ACTIVE(BOXGATED)),           BOXGATED);
+    CHECK_ACTIVE_BOX(IS_ENABLED(IS_RC_MODE_ACTIVE(BOXDIVE)),            BOXDIVE);
 
 #ifdef USE_SERIAL_GIMBAL
     if(IS_RC_MODE_ACTIVE(BOXGIMBALCENTER)) {

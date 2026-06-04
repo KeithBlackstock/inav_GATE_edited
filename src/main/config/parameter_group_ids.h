@@ -133,7 +133,8 @@
 #define PG_GEOZONES 1043
 #define PG_GEOZONE_VERTICES 1044
 #define PG_GATED_CONFIG 1045
-#define PG_INAV_END PG_GATED_CONFIG
+#define PG_DIVE_CONFIG 1047
+#define PG_INAV_END PG_DIVE_CONFIG
 
 // OSD configuration (subject to change)
 //#define PG_OSD_FONT_CONFIG 2047
