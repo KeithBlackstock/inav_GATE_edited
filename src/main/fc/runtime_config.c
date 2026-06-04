@@ -160,6 +160,9 @@ flightModeForTelemetry_e getFlightModeForTelemetry(void)
     if (FLIGHT_MODE(ANGLEHOLD_MODE))
         return FLM_ANGLEHOLD;
 
+    if (FLIGHT_MODE(ATTITUDE_MODE))
+        return FLM_ATTITUDE;
+
     return STATE(AIRMODE_ACTIVE) ? FLM_ACRO_AIR : FLM_ACRO;
 }
 
