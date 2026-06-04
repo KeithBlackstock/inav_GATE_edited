@@ -14,20 +14,19 @@ docs/development/msp/inav_enums.json and inav_enums_ref.md: update MSP enum docs
 
 # ATTITUDE Mode Implementation
 
-This branch (`feature/attitude-mode`) adds a new flight mode called **ATTITUDE** to INAV. ATTITUDE mode provides direct attitude control without the cascaded rate loop used by ANGLE mode.
+This branch (`feature/attitude-mode`) adds a new flight mode called **ATTITUDE** to INAV.
 
 ## What is ATTITUDE Mode?
 
 ATTITUDE mode functions similarly to ANGLE mode in terms of setting attitude targets from stick inputs, but uses a fundamentally different control approach:
 
-- **ANGLE mode**: Uses cascaded control (Attitude → Rate → Motors)
-- **ATTITUDE mode**: Uses direct control (Attitude → Motors)
+ANGLE Mode: You tune it by defining angular velocity limits. You tell the flight controller, "When you are 20 degrees off level, rotate at a maximum of 45 degrees-per-second to fix it." This is why ANGLE mode often feels detached from the stick; you are commanding a speed of correction.
 
-### Key Differences from ANGLE Mode:
+ATTITUDE Mode: Because of your 0-100% scaling logic feeding directly into FF, you are effectively tuning aerodynamic spring stiffness. You are telling the flight controller, "When you are at maximum angle error, apply X% of your available servo authority."
 
-1. **Non-cascaded PID**: Applies PID directly to attitude error without an intermediate rate controller
-2. **Throw percentage rates**: Uses 0-100% scaling instead of deg/s for more intuitive tuning
-3. **Direct response**: More immediate attitude correction without rate loop dynamics
+ANGLE Mode: Uses INAV's dedicated pidLevel controller. This is a complex outer loop that typically uses its own Proportional and Integral gains to calculate a bounded degrees-per-second (deg/s) command to feed the inner loop.
+
+ATTITUDE Mode: Strips out the pidLevel controller entirely. It replaces it with a raw, linear 0-100% multiplier applied directly to the angle error. You have effectively reduced the outer loop to a pure, highly transparent Proportional (P) gain without the muddying effects of outer-loop I-terms or complex math.
 
 ## Configuration
 
@@ -61,6 +60,3 @@ Higher percentages = more aggressive response to attitude errors.
 - `docs/development/msp/inav_enums.json` - Updated MSP enums
 
 
----
-
-**Note**: This is an experimental flight mode. Test thoroughly in a safe environment before regular use.
