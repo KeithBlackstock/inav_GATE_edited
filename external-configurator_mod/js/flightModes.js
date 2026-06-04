@@ -305,6 +305,16 @@ var FLIGHT_MODES = [
         boxId: 60,
         boxName: "GATED",
         permanentId: 69
+    },
+    {
+        boxId: 61,
+        boxName: "ATTITUDE",
+        permanentId: 70
+    },
+    {
+        boxId: 62,
+        boxName: "LEVEL",
+        permanentId: 71
     }
 ];
 
