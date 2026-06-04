@@ -27,6 +27,30 @@ external-configurator_mod/js/flightModes.js: adds LEVEL to the configurator AUX 
 
 Known issues / future patches:
 
-1. Box ID conflict: BOXLEVEL is assigned ID 61 on this branch. On the main branch, BOXATTITUDE also uses ID 61. These will collide if this branch is merged into main without renumbering one of them. Resolution: reassign BOXLEVEL to the next available ID (currently 63) and update its permanent ID accordingly.
+1. pidLevel() blend is identical to HORIZON: the current implementation blends rateTarget using the same formula as HORIZON mode. This means LEVEL and HORIZON behave identically at runtime — the "manual passthrough" intent is not yet realized. To achieve true passthrough at full stick, the rate PID step that follows pidLevel() must be bypassed (or its output zeroed/passthrough-mapped) when LEVEL_MODE is active and horizonRateMagnitude approaches 1.0. The blend in pidLevel() itself is correct; the missing piece is suppressing the downstream rate controller.
 
-2. pidLevel() blend is identical to HORIZON: the current implementation blends rateTarget using the same formula as HORIZON mode. This means LEVEL and HORIZON behave identically at runtime — the "manual passthrough" intent is not yet realized. To achieve true passthrough at full stick, the rate PID step that follows pidLevel() must be bypassed (or its output zeroed/passthrough-mapped) when LEVEL_MODE is active and horizonRateMagnitude approaches 1.0. The blend in pidLevel() itself is correct; the missing piece is suppressing the downstream rate controller.
+---
+
+# DIVE Mode Implementation
+
+DIVE is an AUX-selectable throttle-limiting mode for fixed-wing aircraft. When active, it asymmetrically attenuates throttle as a function of nose-down pitch angle, leaving throttle untouched during level or nose-up flight. At `dive_max_dive_angle` degrees nose-down, throttle is reduced to idle; between 0° and that threshold, attenuation is proportional. This allows the motor to spool back automatically during dives while still being available the moment the nose comes up.
+
+Requires accelerometer. Mutually exclusive with nothing — it stacks on top of whatever flight mode is active.
+
+## Configuration
+
+```
+set dive_max_dive_angle = 30    # Nose-down angle at which throttle hits idle (0-90°, default 30)
+```
+
+Setting `dive_max_dive_angle = 0` cuts throttle to idle at any nose-down pitch.
+
+## Key Files
+
+- `src/main/flight/dive_mode.c` — throttle attenuation logic and parameter group registration
+- `src/main/flight/dive_mode.h` — DIVE config struct and function declaration
+- `src/main/fc/fc_core.c` — calls `applyDiveThrottleAttenuation()` in the RC command path
+- `src/main/fc/rc_modes.h` — adds BOXDIVE (ID 62)
+- `src/main/fc/fc_msp_box.c` — exposes DIVE as an MSP/AUX mode with permanent ID 71
+- `src/main/config/parameter_group_ids.h` — adds PG_DIVE_CONFIG (1047)
+- `src/main/fc/settings.yaml` — adds `dive_max_dive_angle`
