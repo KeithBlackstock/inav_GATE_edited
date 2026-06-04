@@ -310,6 +310,11 @@ var FLIGHT_MODES = [
         boxId: 61,
         boxName: "ATTITUDE",
         permanentId: 70
+    },
+    {
+        boxId: 62,
+        boxName: "DIVE",
+        permanentId: 71
     }
 ];
 
