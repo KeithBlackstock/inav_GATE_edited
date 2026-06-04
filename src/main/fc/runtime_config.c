@@ -157,6 +157,9 @@ flightModeForTelemetry_e getFlightModeForTelemetry(void)
     if (FLIGHT_MODE(HORIZON_MODE))
         return FLM_HORIZON;
 
+    if (FLIGHT_MODE(LEVEL_MODE))
+        return FLM_HORIZON;  // Report as HORIZON for telemetry compatibility
+
     if (FLIGHT_MODE(ANGLEHOLD_MODE))
         return FLM_ANGLEHOLD;
 

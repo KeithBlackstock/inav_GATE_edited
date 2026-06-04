@@ -719,6 +719,13 @@ static void pidLevel(const float angleTarget, pidState_t *pidState, flight_dynam
 
     // P[LEVEL] defines self-leveling strength (both for ANGLE and HORIZON modes)
     if (FLIGHT_MODE(HORIZON_MODE)) {
+        // HORIZON: Blend ANGLE with ACRO based on stick deflection
+        pidState->rateTarget = (1.0f - horizonRateMagnitude) * angleRateTarget + horizonRateMagnitude * pidState->rateTarget;
+    } else if (FLIGHT_MODE(LEVEL_MODE)) {
+        // LEVEL: Blend ANGLE with MANUAL (passthrough) - at full stick, control passes through directly
+        // horizonRateMagnitude is reused here to determine blend ratio based on stick position
+        // At center stick (horizonRateMagnitude = 0): full ANGLE mode (angleRateTarget)
+        // At full stick (horizonRateMagnitude = 1): passthrough to manual control (rateTarget unchanged)
         pidState->rateTarget = (1.0f - horizonRateMagnitude) * angleRateTarget + horizonRateMagnitude * pidState->rateTarget;
     } else {
         pidState->rateTarget = angleRateTarget;
@@ -1273,12 +1280,12 @@ void FAST_CODE pidController(float dT)
 #endif
     }
 
-    // Step 3: Run control for ANGLE_MODE, HORIZON_MODE and ANGLEHOLD_MODE
-    const float horizonRateMagnitude = FLIGHT_MODE(HORIZON_MODE) ? calcHorizonRateMagnitude() : 0.0f;
+    // Step 3: Run control for ANGLE_MODE, HORIZON_MODE, LEVEL_MODE and ANGLEHOLD_MODE
+    const float horizonRateMagnitude = (FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(LEVEL_MODE)) ? calcHorizonRateMagnitude() : 0.0f;
     angleHoldIsLevel = false;
 
     for (uint8_t axis = FD_ROLL; axis <= FD_PITCH; axis++) {
-        if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(ANGLEHOLD_MODE) || isFlightAxisAngleOverrideActive(axis)) {
+        if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(LEVEL_MODE) || FLIGHT_MODE(ANGLEHOLD_MODE) || isFlightAxisAngleOverrideActive(axis)) {
             // If axis angle override, get the correct angle from Logic Conditions
             float angleTarget = getFlightAxisAngleOverride(axis, computePidLevelTarget(axis));
 
@@ -1293,14 +1300,14 @@ void FAST_CODE pidController(float dT)
 
             // Apply the Level PID controller
             pidLevel(angleTarget, &pidState[axis], axis, horizonRateMagnitude, dT);
-            canUseFpvCameraMix = false;     // FPVANGLEMIX is incompatible with ANGLE/HORIZON
+            canUseFpvCameraMix = false;     // FPVANGLEMIX is incompatible with ANGLE/HORIZON/LEVEL
         } else {
             restartAngleHoldMode = true;
         }
     }
 
     // Apply Turn Assistance
-    if (FLIGHT_MODE(TURN_ASSISTANT) && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
+    if (FLIGHT_MODE(TURN_ASSISTANT) && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(LEVEL_MODE))) {
         float bankAngleTarget = DECIDEGREES_TO_RADIANS(pidRcCommandToAngle(rcCommand[FD_ROLL], pidProfile()->max_angle_inclination[FD_ROLL]));
         float pitchAngleTarget = DECIDEGREES_TO_RADIANS(pidRcCommandToAngle(rcCommand[FD_PITCH], pidProfile()->max_angle_inclination[FD_PITCH]));
         pidTurnAssistant(pidState, bankAngleTarget, pitchAngleTarget);
