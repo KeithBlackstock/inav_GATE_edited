@@ -25,10 +25,6 @@ src/main/fc/runtime_config.c: activates LEVEL_MODE when BOXLEVEL is selected.
 src/main/flight/pid.c: routes LEVEL through pidLevel() with horizonRateMagnitude blend; extends ANGLE/HORIZON checks to include LEVEL throughout pidController().
 external-configurator_mod/js/flightModes.js: adds LEVEL to the configurator AUX mode list.
 
-Known issues / future patches:
-
-1. pidLevel() blend is identical to HORIZON: the current implementation blends rateTarget using the same formula as HORIZON mode. This means LEVEL and HORIZON behave identically at runtime — the "manual passthrough" intent is not yet realized. To achieve true passthrough at full stick, the rate PID step that follows pidLevel() must be bypassed (or its output zeroed/passthrough-mapped) when LEVEL_MODE is active and horizonRateMagnitude approaches 1.0. The blend in pidLevel() itself is correct; the missing piece is suppressing the downstream rate controller.
-
 ---
 
 # DIVE Mode Implementation

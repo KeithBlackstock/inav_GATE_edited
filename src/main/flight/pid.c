@@ -721,13 +721,8 @@ static void pidLevel(const float angleTarget, pidState_t *pidState, flight_dynam
     if (FLIGHT_MODE(HORIZON_MODE)) {
         // HORIZON: Blend ANGLE with ACRO based on stick deflection
         pidState->rateTarget = (1.0f - horizonRateMagnitude) * angleRateTarget + horizonRateMagnitude * pidState->rateTarget;
-    } else if (FLIGHT_MODE(LEVEL_MODE)) {
-        // LEVEL: Blend ANGLE with MANUAL (passthrough) - at full stick, control passes through directly
-        // horizonRateMagnitude is reused here to determine blend ratio based on stick position
-        // At center stick (horizonRateMagnitude = 0): full ANGLE mode (angleRateTarget)
-        // At full stick (horizonRateMagnitude = 1): passthrough to manual control (rateTarget unchanged)
-        pidState->rateTarget = (1.0f - horizonRateMagnitude) * angleRateTarget + horizonRateMagnitude * pidState->rateTarget;
     } else {
+        // ANGLE_MODE, LEVEL_MODE: full angle control; LEVEL blends toward manual passthrough at the output stage
         pidState->rateTarget = angleRateTarget;
     }
 }
@@ -1331,6 +1326,13 @@ void FAST_CODE pidController(float dT)
         checkItermFreezingActive(&pidState[axis], axis);
 
         pidControllerApplyFn(&pidState[axis], dT, dT_inv);
+    }
+
+    // Step 5: LEVEL mode output blend — fade from angle PID toward direct RC passthrough as stick deflects
+    if (FLIGHT_MODE(LEVEL_MODE) && horizonRateMagnitude > 0.0f) {
+        for (int axis = FD_ROLL; axis <= FD_PITCH; axis++) {
+            axisPID[axis] = lrintf((1.0f - horizonRateMagnitude) * (float)axisPID[axis] + horizonRateMagnitude * (float)rcCommand[axis]);
+        }
     }
 }
 
