@@ -722,6 +722,16 @@ OFF = OSD hardware blink / ON = OSD software blink. If OSD warning text/values a
 
 ---
 
+### dive_max_dive_angle
+
+Nose-down pitch angle (degrees) at which throttle is cut entirely in DIVE mode [0-90]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 30 | 0 | 90 |
+
+---
+
 ### dji_cn_alternating_duration
 
 Alternating duration of craft name elements, in tenths of a second
