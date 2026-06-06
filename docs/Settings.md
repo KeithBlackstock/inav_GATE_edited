@@ -6272,6 +6272,26 @@ The strength factor of a Smith Predictor of PID measurement. In percents
 
 ---
 
+### speed_proportional_gain
+
+Proportional gain for SPEED mode controller (scaled by 0.01, so 50 = 0.50) [1-200]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 50 | 1 | 200 |
+
+---
+
+### speed_target_speed
+
+Target cruise speed for SPEED mode in cm/s (1500 = 15 m/s = 54 km/h) [100-5000]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 1500 | 100 | 5000 |
+
+---
+
 ### spektrum_sat_bind
 
 0 = disabled. Used to bind the spektrum satellite to RX
