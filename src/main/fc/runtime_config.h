@@ -109,6 +109,7 @@ typedef enum {
     NAV_FW_AUTOLAND       = (1 << 18),
     NAV_SEND_TO           = (1 << 19),
     LEVEL_MODE            = (1 << 20),
+    SPEED_MODE            = (1 << 21),  // GPS cruise speed controller
 } flightModeFlags_e;
 
 extern uint32_t flightModeFlags;

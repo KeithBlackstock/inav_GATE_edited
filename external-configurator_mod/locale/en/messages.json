@@ -6542,6 +6542,27 @@
     "configurationDiveMaxDiveAngleHelp": {
         "message": "Nose-down pitch angle (0-90°) at which throttle is cut entirely in DIVE mode. Throttle is proportionally reduced between 0° and this angle. Setting 0° cuts throttle to idle at any nose-down pitch."
     },
+    "auxiliaryModeSPEED": {
+        "message": "SPEED"
+    },
+    "auxiliaryModeSPEEDDescription": {
+        "message": "GPS-based cruise speed controller for fixed-wing aircraft. Automatically modulates throttle to maintain target airspeed using GPS ground speed. Requires GPS fix."
+    },
+    "configurationSpeed": {
+        "message": "SPEED Mode Settings"
+    },
+    "configurationSpeedTargetSpeed": {
+        "message": "Target Speed"
+    },
+    "configurationSpeedTargetSpeedHelp": {
+        "message": "Target ground speed in cm/s (100-5000 cm/s = 1-50 m/s = 3.6-180 km/h). SPEED mode will modulate throttle to maintain this speed."
+    },
+    "configurationSpeedProportionalGain": {
+        "message": "Proportional Gain"
+    },
+    "configurationSpeedProportionalGainHelp": {
+        "message": "Proportional gain for speed controller (1-200, scaled by 0.01). Higher values = more aggressive throttle response. Start with 50-100 and tune based on aircraft response."
+    },
     "auxiliaryModeGATED": {
         "message": "GATED"
     },

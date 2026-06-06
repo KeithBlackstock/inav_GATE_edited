@@ -4529,3 +4529,20 @@ groups:
         field: maxDiveAngle
         min: 0
         max: 90
+
+  - name: PG_SPEED_CONFIG
+    headers: ["flight/speed_mode.h"]
+    type: speedConfig_t
+    members:
+      - name: speed_target_speed
+        description: "Target cruise speed for SPEED mode in cm/s (1500 = 15 m/s = 54 km/h) [100-5000]"
+        default_value: 1500
+        field: targetSpeed
+        min: 100
+        max: 5000
+      - name: speed_proportional_gain
+        description: "Proportional gain for SPEED mode controller (scaled by 0.01, so 50 = 0.50) [1-200]"
+        default_value: 50
+        field: proportionalGain
+        min: 1
+        max: 200

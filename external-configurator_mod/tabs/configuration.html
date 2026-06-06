@@ -404,6 +404,29 @@
                     </div>
                 </div>
             </div>
+
+            <div class="config-section gui_box grey config-speed">
+                <div class="gui_box_titlebar">
+                    <div class="spacer_box_title" data-i18n="configurationSpeed"></div>
+                </div>
+                <div class="spacer_box">
+                    <div class="number">
+                        <input type="number" id="speed_target_speed" name="speed_target_speed" step="10" min="100" max="5000" data-setting="speed_target_speed" />
+                        <label for="speed_target_speed">
+                            <span data-i18n="configurationSpeedTargetSpeed"></span>
+                            <span>cm/s</span>
+                        </label>
+                        <div for="speed_target_speed" class="helpicon cf_tip" data-i18n_title="configurationSpeedTargetSpeedHelp"></div>
+                    </div>
+                    <div class="number">
+                        <input type="number" id="speed_proportional_gain" name="speed_proportional_gain" step="1" min="1" max="200" data-setting="speed_proportional_gain" />
+                        <label for="speed_proportional_gain">
+                            <span data-i18n="configurationSpeedProportionalGain"></span>
+                        </label>
+                        <div for="speed_proportional_gain" class="helpicon cf_tip" data-i18n_title="configurationSpeedProportionalGainHelp"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="clear-both"></div>

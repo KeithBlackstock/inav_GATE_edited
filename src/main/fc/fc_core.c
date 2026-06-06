@@ -90,6 +90,7 @@
 #include "flight/rate_dynamics.h"
 #include "flight/gated_mode.h"
 #include "flight/dive_mode.h"
+#include "flight/speed_mode.h"
 
 #include "flight/failsafe.h"
 #include "flight/power_limits.h"
@@ -437,6 +438,7 @@ static void processPilotAndFailSafeActions(float dT)
         //Compute THROTTLE command
         rcCommand[THROTTLE] = throttleStickMixedValue();
         applyDiveThrottleAttenuation();
+        applySpeedThrottleControl();
 
         // Signal updated rcCommand values to Failsafe system when new RC data arrived
         if (isRXDataNew) {

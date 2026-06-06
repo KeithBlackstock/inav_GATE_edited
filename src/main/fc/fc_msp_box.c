@@ -112,6 +112,7 @@ static const box_t boxes[CHECKBOX_ITEM_COUNT + 1] = {
     { .boxId = BOXGATED,            .boxName = "GATED",             .permanentId = 69 },
     { .boxId = BOXLEVEL,            .boxName = "LEVEL",             .permanentId = 72 },
     { .boxId = BOXDIVE,             .boxName = "DIVE",              .permanentId = 71 },
+    { .boxId = BOXSPEED,            .boxName = "SPEED",             .permanentId = 73 },
     { .boxId = CHECKBOX_ITEM_COUNT, .boxName = NULL,                .permanentId = 0xFF }
 };
 
