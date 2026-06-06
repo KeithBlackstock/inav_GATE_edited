@@ -58,10 +58,8 @@ void applySpeedThrottleControl(void)
     
     // Get throttle limits
     const int16_t idleThrottle = (int16_t)getThrottleIdleValue();
-    const int16_t maxThrottle = PWM_RANGE_MAX;
+    const int16_t maxThrottle = (int16_t)getMaxThrottle();
     
     // Apply adjustment and constrain to valid range
     rcCommand[THROTTLE] = constrain(rcCommand[THROTTLE] + throttleAdjustment, idleThrottle, maxThrottle);
 }
-
-// Made with Bob

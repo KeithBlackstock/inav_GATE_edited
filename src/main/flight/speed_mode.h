@@ -28,5 +28,3 @@ typedef struct speedConfig_s {
 PG_DECLARE(speedConfig_t, speedConfig);
 
 void applySpeedThrottleControl(void);
-
-// Made with Bob
