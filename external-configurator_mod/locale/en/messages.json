@@ -6563,6 +6563,21 @@
     "configurationSpeedProportionalGainHelp": {
         "message": "Proportional gain for speed controller (1-200, scaled by 0.01). Higher values = more aggressive throttle response. Start with 50-100 and tune based on aircraft response."
     },
+    "auxiliaryModeRECALL": {
+        "message": "RECALL"
+    },
+    "auxiliaryModeRECALLDescription": {
+        "message": "GPS heading-error steering mode that banks toward home using LEVEL-mode attitude limits. Pilot pitch, roll, and yaw inputs are ignored while active; throttle remains manual. Requires GPS fix, home position, and accelerometer."
+    },
+    "configurationRecall": {
+        "message": "RECALL Mode Settings"
+    },
+    "configurationRecallSteeringGain": {
+        "message": "Steering Gain"
+    },
+    "configurationRecallSteeringGainHelp": {
+        "message": "Proportional gain for RECALL heading-error steering (1-200, scaled by 0.01). Higher values command more bank for the same heading error."
+    },
     "auxiliaryModeGATED": {
         "message": "GATED"
     },

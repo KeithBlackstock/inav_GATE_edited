@@ -48,6 +48,7 @@
 #include "flight/kalman.h"
 #include "flight/smith_predictor.h"
 #include "flight/adaptive_filter.h"
+#include "flight/recall_mode.h"
 
 #include "io/gps.h"
 
@@ -1276,7 +1277,7 @@ void FAST_CODE pidController(float dT)
     }
 
     // Step 3: Run control for ANGLE_MODE, HORIZON_MODE, LEVEL_MODE and ANGLEHOLD_MODE
-    const float horizonRateMagnitude = (FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(LEVEL_MODE)) ? calcHorizonRateMagnitude() : 0.0f;
+    const float horizonRateMagnitude = (FLIGHT_MODE(HORIZON_MODE) || (FLIGHT_MODE(LEVEL_MODE) && !isRecallModeAvailable())) ? calcHorizonRateMagnitude() : 0.0f;
     angleHoldIsLevel = false;
 
     for (uint8_t axis = FD_ROLL; axis <= FD_PITCH; axis++) {

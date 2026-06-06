@@ -113,6 +113,7 @@ static const box_t boxes[CHECKBOX_ITEM_COUNT + 1] = {
     { .boxId = BOXLEVEL,            .boxName = "LEVEL",             .permanentId = 72 },
     { .boxId = BOXDIVE,             .boxName = "DIVE",              .permanentId = 71 },
     { .boxId = BOXSPEED,            .boxName = "SPEED",             .permanentId = 73 },
+    { .boxId = BOXRECALL,           .boxName = "RECALL",            .permanentId = 74 },
     { .boxId = CHECKBOX_ITEM_COUNT, .boxName = NULL,                .permanentId = 0xFF }
 };
 
@@ -210,6 +211,9 @@ void initActiveBoxIds(void)
 
     if (sensors(SENSOR_GPS)) {
         ADD_ACTIVE_BOX(BOXSPEED);
+        if (sensors(SENSOR_ACC)) {
+            ADD_ACTIVE_BOX(BOXRECALL);
+        }
     }
 
     if (!feature(FEATURE_AIRMODE) && STATE(ALTITUDE_CONTROL)) {
@@ -467,6 +471,7 @@ void packBoxModeFlags(boxBitmask_t * mspBoxModeFlags)
     CHECK_ACTIVE_BOX(IS_ENABLED(IS_RC_MODE_ACTIVE(BOXGATED)),           BOXGATED);
     CHECK_ACTIVE_BOX(IS_ENABLED(IS_RC_MODE_ACTIVE(BOXDIVE)),            BOXDIVE);
     CHECK_ACTIVE_BOX(IS_ENABLED(IS_RC_MODE_ACTIVE(BOXSPEED)),           BOXSPEED);
+    CHECK_ACTIVE_BOX(IS_ENABLED(IS_RC_MODE_ACTIVE(BOXRECALL)),          BOXRECALL);
 
 #ifdef USE_SERIAL_GIMBAL
     if(IS_RC_MODE_ACTIVE(BOXGIMBALCENTER)) {

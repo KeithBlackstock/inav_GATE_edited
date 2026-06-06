@@ -4546,3 +4546,14 @@ groups:
         field: proportionalGain
         min: 1
         max: 200
+
+  - name: PG_RECALL_CONFIG
+    headers: ["flight/recall_mode.h"]
+    type: recallConfig_t
+    members:
+      - name: recall_steering_gain
+        description: "Proportional gain for RECALL heading-error steering (scaled by 0.01, so 50 = 0.50) [1-200]"
+        default_value: 50
+        field: steeringGain
+        min: 1
+        max: 200

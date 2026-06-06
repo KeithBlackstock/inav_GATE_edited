@@ -135,7 +135,8 @@
 #define PG_GATED_CONFIG 1045
 #define PG_DIVE_CONFIG 1047
 #define PG_SPEED_CONFIG 1048
-#define PG_INAV_END PG_SPEED_CONFIG
+#define PG_RECALL_CONFIG 1049
+#define PG_INAV_END PG_RECALL_CONFIG
 
 // OSD configuration (subject to change)
 //#define PG_OSD_FONT_CONFIG 2047

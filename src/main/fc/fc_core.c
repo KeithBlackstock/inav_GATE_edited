@@ -91,6 +91,7 @@
 #include "flight/gated_mode.h"
 #include "flight/dive_mode.h"
 #include "flight/speed_mode.h"
+#include "flight/recall_mode.h"
 
 #include "flight/failsafe.h"
 #include "flight/power_limits.h"
@@ -134,6 +135,7 @@ static bool isAccRequired(void) {
     return isModeActivationConditionPresent(BOXNAVPOSHOLD) ||
         isModeActivationConditionPresent(BOXNAVRTH) ||
         isModeActivationConditionPresent(BOXNAVWP) ||
+        isModeActivationConditionPresent(BOXRECALL) ||
         isModeActivationConditionPresent(BOXANGLE) ||
         isModeActivationConditionPresent(BOXHORIZON) ||
         isModeActivationConditionPresent(BOXNAVALTHOLD) ||
@@ -434,6 +436,7 @@ static void processPilotAndFailSafeActions(float dT)
         }
 
         applyGatedRollAttenuation();
+        applyRecallSteering();
 
         //Compute THROTTLE command
         rcCommand[THROTTLE] = throttleStickMixedValue();
@@ -445,7 +448,7 @@ static void processPilotAndFailSafeActions(float dT)
             failsafeUpdateRcCommandValues();
         }
 
-        if (FLIGHT_MODE(HEADFREE_MODE)) {
+        if (FLIGHT_MODE(HEADFREE_MODE) && !isRecallModeAvailable()) {
             const float radDiff = degreesToRadians(DECIDEGREES_TO_DEGREES(attitude.values.yaw) - headFreeModeHold);
             const float cosDiff = cos_approx(radDiff);
             const float sinDiff = sin_approx(radDiff);
@@ -697,12 +700,12 @@ void processRx(timeUs_t currentTimeUs)
     DISABLE_FLIGHT_MODE(LEVEL_MODE);
     DISABLE_FLIGHT_MODE(ANGLEHOLD_MODE);
 
-    if (sensors(SENSOR_ACC) && (!FLIGHT_MODE(MANUAL_MODE) || autoEnableAngle)) {
+    if (sensors(SENSOR_ACC) && (!FLIGHT_MODE(MANUAL_MODE) || autoEnableAngle || isRecallModeAvailable())) {
         if (IS_RC_MODE_ACTIVE(BOXANGLE) || autoEnableAngle) {
             ENABLE_FLIGHT_MODE(ANGLE_MODE);
         } else if (IS_RC_MODE_ACTIVE(BOXHORIZON)) {
             ENABLE_FLIGHT_MODE(HORIZON_MODE);
-        } else if (IS_RC_MODE_ACTIVE(BOXLEVEL)) {
+        } else if (IS_RC_MODE_ACTIVE(BOXLEVEL) || isRecallModeAvailable()) {
             ENABLE_FLIGHT_MODE(LEVEL_MODE);
         } else if (STATE(AIRPLANE) && IS_RC_MODE_ACTIVE(BOXANGLEHOLD)) {
             ENABLE_FLIGHT_MODE(ANGLEHOLD_MODE);

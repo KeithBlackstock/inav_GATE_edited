@@ -89,6 +89,7 @@ typedef enum {
     BOXLEVEL         = 61,
     BOXDIVE          = 62,
     BOXSPEED         = 63,
+    BOXRECALL        = 64,
     CHECKBOX_ITEM_COUNT
 } boxId_e;
 

@@ -15,7 +15,7 @@ RECALL is a proportional 2D GPS steering mode that steers the aircraft toward th
 - Calculates 2D heading error between current heading and bearing to home
 - Commands bank angle proportional to heading error
 - Uses LEVEL mode's `max_angle_inclination_rll` setting for maximum bank angle
-- Leaves pitch and throttle under pilot control
+- Zeroes pitch and yaw commands; only throttle remains under pilot control
 
 ### Requirements
 - GPS fix required (mode inactive without GPS)
@@ -51,7 +51,7 @@ RECALL is a proportional 2D GPS steering mode that steers the aircraft toward th
 4. Calculate desired bank angle from 2D heading error and recall_steering_gain
 5. Constrain bank angle to LEVEL mode's max_angle_inclination_rll
 6. Convert desired bank angle to rcCommand[ROLL]
-7. Pilot controls throttle and pitch
+7. Zero rcCommand[PITCH] and rcCommand[YAW] — pilot controls throttle only
 ```
 
 ### Proportional Heading-Error Algorithm

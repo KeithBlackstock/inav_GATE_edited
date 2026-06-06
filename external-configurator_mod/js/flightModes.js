@@ -320,6 +320,11 @@ var FLIGHT_MODES = [
         boxId: 63,
         boxName: "SPEED",
         permanentId: 73
+    },
+    {
+        boxId: 64,
+        boxName: "RECALL",
+        permanentId: 74
     }
 ];
 

@@ -5852,6 +5852,16 @@ Exponential value used for the YAW axis by all the stabilized flights modes (all
 
 ---
 
+### recall_steering_gain
+
+Proportional gain for RECALL heading-error steering (scaled by 0.01, so 50 = 0.50) [1-200]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 50 | 1 | 200 |
+
+---
+
 ### receiver_type
 
 Selection of receiver (RX) type. Additional configuration of a `serialrx_provider` and a UART will be needed for `SERIAL`
