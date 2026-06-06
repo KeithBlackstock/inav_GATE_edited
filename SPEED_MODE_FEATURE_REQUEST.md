@@ -23,7 +23,7 @@ Implement a GPS-based cruise speed controller for fixed-wing aircraft that autom
 ```
 speed_error = target_speed - current_gps_speed
 throttle_adjustment = speed_error * proportional_gain * 0.01
-throttle_output = constrain(base_throttle + adjustment, idle, max)
+throttle_output = constrain(rcCommand[THROTTLE] + throttle_adjustment, idle, max)
 ```
 
 ## Implementation Checklist
@@ -49,7 +49,7 @@ void applySpeedThrottleControl(void);
 
 #### 2. Implementation File: `src/main/flight/speed_mode.c`
 - Check for BOXSPEED mode active
-- Verify GPS fix available
+- Verify GPS fix available via `STATE(GPS_FIX)` — bail out silently if not set
 - Read GPS ground speed from `gpsSol.groundSpeed`
 - Calculate speed error
 - Apply proportional control
@@ -59,7 +59,7 @@ void applySpeedThrottleControl(void);
 #### 3. Runtime Config: `src/main/fc/runtime_config.h`
 Add to `flightModeFlags_e`:
 ```c
-SPEED_MODE = (1 << 30),  // GPS cruise speed controller
+SPEED_MODE = (1 << 21),  // GPS cruise speed controller (bits 0-20 already taken)
 ```
 
 #### 4. RC Modes: `src/main/fc/rc_modes.h`
@@ -78,7 +78,6 @@ Add entry:
 ```c
 #define PG_SPEED_CONFIG 1048
 ```
-Update `PG_INAV_END` to reference `PG_SPEED_CONFIG`
 
 #### 7. Core Integration: `src/main/fc/fc_core.c`
 - Include `"flight/speed_mode.h"`
