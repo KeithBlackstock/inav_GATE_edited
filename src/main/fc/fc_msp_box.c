@@ -209,12 +209,14 @@ void initActiveBoxIds(void)
         ADD_ACTIVE_BOX(BOXDIVE);
     }
 
-    if (sensors(SENSOR_GPS)) {
+#ifdef USE_GPS
+    if (feature(FEATURE_GPS)) {
         ADD_ACTIVE_BOX(BOXSPEED);
         if (sensors(SENSOR_ACC)) {
             ADD_ACTIVE_BOX(BOXRECALL);
         }
     }
+#endif
 
     if (!feature(FEATURE_AIRMODE) && STATE(ALTITUDE_CONTROL)) {
         ADD_ACTIVE_BOX(BOXAIRMODE);
