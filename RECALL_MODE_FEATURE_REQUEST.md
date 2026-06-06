@@ -15,8 +15,6 @@ RECALL is a pure-pursuit GPS steering mode that autonomously flies the aircraft 
 - Calculates bearing from current position to home waypoint using GPS
 - Commands bank angle to steer toward home using pure-pursuit algorithm
 - Uses LEVEL mode's `max_angle_inclination_rll` setting for maximum bank angle
-- Pilot retains full pitch authority (no altitude control)
-- Pilot retains full throttle authority (no speed control)
 
 ### Coast Radius
 - Configurable proximity radius to home waypoint (e.g., 10-100 meters)
