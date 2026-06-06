@@ -16,11 +16,6 @@ RECALL is a pure-pursuit GPS steering mode that autonomously flies the aircraft 
 - Commands bank angle to steer toward home using pure-pursuit algorithm
 - Uses LEVEL mode's `max_angle_inclination_rll` setting for maximum bank angle
 
-### Coast Radius
-- Configurable proximity radius to home waypoint (e.g., 10-100 meters)
-- When aircraft enters coast radius, throttle is automatically cut to idle
-- Allows aircraft to glide/coast to landing without overshooting home
-
 ### Requirements
 - GPS fix required (mode inactive without GPS)
 - Home position must be set
@@ -58,10 +53,6 @@ RECALL is a pure-pursuit GPS steering mode that autonomously flies the aircraft 
    - Constrain to LEVEL mode's max_angle_inclination_rll
    - Apply bank angle via LEVEL mode attitude controller
    - Pilot controls throttle and pitch
-5. If distance <= coast_radius:
-   - Cut throttle to idle (getThrottleIdleValue())
-   - Continue steering to home
-   - Pilot can override by disabling RECALL
 ```
 
 ### Pure-Pursuit Algorithm
@@ -86,17 +77,6 @@ desiredBank = constrainf(desiredBank, -maxBank, maxBank);
 applyLevelModeAttitude(desiredBank, pilotPitchInput);
 ```
 
-### Throttle Coast Logic
-```c
-float distanceToHome = calculateDistance(currentPos, homePos);
-
-if (distanceToHome <= recallConfig()->coastRadius) {
-    // Cut throttle to idle
-    rcCommand[THROTTLE] = getThrottleIdleValue();
-}
-// Otherwise pilot controls throttle normally
-```
-
 ## User Interface
 
 ### Configurator - Modes Tab
@@ -105,14 +85,7 @@ if (distanceToHome <= recallConfig()->coastRadius) {
 - Active indicator shows when mode is engaged
 
 ### Configurator - Configuration Tab
-New "RECALL Mode Settings" section:
-- **Coast Radius**: Input field, 10-100 meters, unit: m
-- Help text: "Distance from home at which throttle cuts to idle for coasting approach"
-
-### OSD Elements (Optional Future Enhancement)
-- Distance to home
-- Bearing to home arrow
-- "COAST" indicator when in coast radius
+- RECALL steering gain field
 
 
 ## Implementation Files
