@@ -4,7 +4,7 @@
 RECALL is a pure-pursuit GPS steering mode that autonomously flies the aircraft back to the home waypoint using LEVEL mode's attitude control settings. Unlike NAV RTH, RECALL is a minimalist steering-only mode with no altitude management, energy management, or complex navigation logic.
 
 ## Motivation
-- **Simplicity**: Pilots want a "get home" mode that doesn't fight their throttle inputs or manage altitude
+- **Simplicity**: Predictable, emergent trajectoy instead of a complex kinematics
 - **Manual Control**: Pilot retains full throttle authority for energy management
 - **Predictable Behavior**: Uses familiar LEVEL mode attitude limits, not separate NAV tuning
 - **Coast Feature**: Automatic throttle cut when approaching home prevents overshooting
@@ -19,10 +19,9 @@ RECALL is a pure-pursuit GPS steering mode that autonomously flies the aircraft 
 - Pilot retains full throttle authority (no speed control)
 
 ### Coast Radius
-- Configurable proximity radius to home waypoint (e.g., 50-500 meters)
+- Configurable proximity radius to home waypoint (e.g., 10-100 meters)
 - When aircraft enters coast radius, throttle is automatically cut to idle
 - Allows aircraft to glide/coast to landing without overshooting home
-- Pilot can override by disabling RECALL mode
 
 ### Requirements
 - GPS fix required (mode inactive without GPS)
@@ -34,8 +33,8 @@ RECALL is a pure-pursuit GPS steering mode that autonomously flies the aircraft 
 
 ### `recall_coast_radius`
 - **Type**: uint16_t
-- **Range**: 50-1000 meters
-- **Default**: 100 meters
+- **Range**: 10-100 meters
+- **Default**: 10 meters
 - **Description**: Distance from home at which throttle is cut to idle for coasting approach
 
 ### Reuses Existing Settings
@@ -109,7 +108,7 @@ if (distanceToHome <= recallConfig()->coastRadius) {
 
 ### Configurator - Configuration Tab
 New "RECALL Mode Settings" section:
-- **Coast Radius**: Input field, 50-1000 meters, unit: m
+- **Coast Radius**: Input field, 10-100 meters, unit: m
 - Help text: "Distance from home at which throttle cuts to idle for coasting approach"
 
 ### OSD Elements (Optional Future Enhancement)
@@ -117,48 +116,6 @@ New "RECALL Mode Settings" section:
 - Bearing to home arrow
 - "COAST" indicator when in coast radius
 
-## Comparison with NAV RTH
-
-| Feature | NAV RTH | RECALL |
-|---------|---------|--------|
-| Altitude Control | Yes (climbs to RTH altitude) | No (pilot controls pitch) |
-| Speed Control | Yes (maintains cruise speed) | No (pilot controls throttle) |
-| Loiter at Home | Yes (circles overhead) | No (coasts to idle) |
-| Obstacle Avoidance | Possible with safehomes | No |
-| Complexity | High (full navigation stack) | Low (steering only) |
-| Tuning Required | Yes (NAV PIDs, speeds, altitudes) | No (uses LEVEL mode settings) |
-| Use Case | Autonomous return | Manual return with GPS assist |
-
-## Benefits
-
-1. **Simplicity**: No complex NAV tuning required, reuses LEVEL mode settings
-2. **Pilot Authority**: Full control over energy management (throttle/pitch)
-3. **Predictable**: Behavior matches familiar LEVEL mode characteristics
-4. **Flexible**: Works with any throttle/altitude strategy pilot chooses
-5. **Safe Coast**: Automatic throttle cut prevents home overshoot
-6. **Lightweight**: Minimal code, no altitude/speed controllers needed
-
-## Use Cases
-
-### Sport Flying
-- Quick "point me home" when disoriented
-- Pilot manages altitude and speed for optimal return
-- Coast feature helps with landing approach
-
-### Long Range
-- GPS-assisted return when visual contact lost
-- Pilot controls throttle for best range/endurance
-- No altitude changes that waste energy
-
-### Training
-- Safety feature for new pilots
-- Simpler than full NAV RTH
-- Teaches GPS-assisted flying
-
-### FPV Racing
-- Emergency return when video feed lost
-- Minimal interference with pilot control
-- Fast activation/deactivation
 
 ## Implementation Files
 
@@ -177,26 +134,3 @@ New "RECALL Mode Settings" section:
 - `tabs/configuration.html` - Add RECALL mode settings UI
 - `locale/en/messages.json` - Add RECALL mode strings
 
-## Testing Considerations
-
-1. **GPS Accuracy**: Test with various GPS fix qualities
-2. **Home Distance**: Test at various distances (near/far from home)
-3. **Coast Radius**: Verify throttle cut at correct distance
-4. **Bank Angle Limits**: Confirm respects LEVEL mode settings
-5. **Mode Transitions**: Test entering/exiting RECALL smoothly
-6. **Pilot Override**: Verify pilot can override coast throttle cut
-7. **No GPS**: Confirm mode inactive without GPS fix
-8. **No Home**: Confirm mode inactive without home position
-
-## Future Enhancements (Optional)
-
-1. **Configurable Pursuit Gain**: Allow tuning of steering aggressiveness
-2. **Altitude Hold Option**: Optional altitude hold during return
-3. **Speed Limit Option**: Optional speed limiting during return
-4. **OSD Integration**: Display distance/bearing to home
-5. **Telemetry Logging**: Log RECALL mode activations and performance
-6. **Multi-Waypoint**: Extend to recall to any saved waypoint, not just home
-
-## Conclusion
-
-RECALL mode fills the gap between manual flying and full autonomous NAV RTH. It provides GPS-assisted steering home while leaving energy management to the pilot, using familiar LEVEL mode attitude control. The coast radius feature adds a practical landing approach aid. This mode is ideal for pilots who want GPS assistance without giving up control authority.
