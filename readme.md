@@ -50,3 +50,26 @@ Setting `dive_max_dive_angle = 0` cuts throttle to idle at any nose-down pitch.
 - `src/main/fc/fc_msp_box.c` — exposes DIVE as an MSP/AUX mode with permanent ID 71
 - `src/main/config/parameter_group_ids.h` — adds PG_DIVE_CONFIG (1047)
 - `src/main/fc/settings.yaml` — adds `dive_max_dive_angle`
+
+---
+
+# RECALL Mode Implementation
+
+RECALL is an AUX-selectable proportional 2D GPS steering mode that banks the aircraft toward the home waypoint using LEVEL mode's attitude control. Unlike NAV RTH, it is a minimalist steering-only mode — no altitude, energy, or navigation management. It computes the bearing and heading error to home, commands a bank angle proportional to that error (scaled by `recall_steering_gain` and constrained to LEVEL's `max_angle_inclination_rll`), and zeroes pitch and yaw. The pilot retains throttle authority only.
+
+Requires GPS fix, home position, and accelerometer. Auto-enables LEVEL_MODE and punches through the MANUAL_MODE exclusion while active; HEADFREE is blocked when RECALL is active.
+
+## Configuration
+
+```
+set recall_steering_gain = 50    # Gain applied to heading error to produce bank angle, scaled by 0.01 (1-200, default 50)
+```
+
+## Key Files
+
+- `src/main/flight/recall_mode.c` / `.h` — proportional heading-error steering logic and PG_RECALL_CONFIG registration
+- `src/main/fc/fc_core.c` — calls `applyRecallSteering()` in the RC command path
+- `src/main/fc/rc_modes.h` — adds BOXRECALL (ID 64)
+- `src/main/fc/fc_msp_box.c` — exposes RECALL as an MSP/AUX mode with permanent ID 74
+- `src/main/config/parameter_group_ids.h` — adds PG_RECALL_CONFIG (1049)
+- `src/main/fc/settings.yaml` — adds `recall_steering_gain`
