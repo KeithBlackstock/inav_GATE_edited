@@ -40,6 +40,39 @@
     float: left;
 }
 
+.level_targets_info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 160px;
+    margin: 0;
+    font-weight: normal;
+    color: #616161;
+    text-align: right;
+}
+
+.level_targets_info dl {
+    width: 100%;
+}
+
+.level_targets_info dt {
+    width: 60%;
+    float: left;
+    clear: left;
+}
+
+.level_targets_info dd {
+    width: 40%;
+    float: left;
+}
+
+.level_targets_info .level_targets_hint {
+    display: block;
+    clear: both;
+    font-size: 0.85em;
+    font-style: italic;
+}
+
 .attitude_note1 {
    position: absolute;
    left: 130px;

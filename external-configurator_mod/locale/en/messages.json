@@ -767,6 +767,24 @@
     "initialSetupAttitude": {
         "message": "$1 deg"
     },
+    "initialSetupLevelTargetRate": {
+        "message": "$1 deg/s"
+    },
+    "initialSetupLevelTargetRollAngle": {
+        "message": "Roll target angle:"
+    },
+    "initialSetupLevelTargetRollRate": {
+        "message": "Roll target rate:"
+    },
+    "initialSetupLevelTargetPitchAngle": {
+        "message": "Pitch target angle:"
+    },
+    "initialSetupLevelTargetPitchRate": {
+        "message": "Pitch target rate:"
+    },
+    "initialSetupLevelTargetsHint": {
+        "message": "Requires CLI: set debug_mode = LEVEL_TARGETS"
+    },
     "initialSetupAccelCalibStarted": {
         "message": "Accelerometer calibration started"
     },

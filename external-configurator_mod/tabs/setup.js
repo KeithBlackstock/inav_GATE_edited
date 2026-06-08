@@ -135,7 +135,11 @@ setupTab.initialize = function (callback) {
             gpsLon_e = $('.gpsLon'),
             roll_e = $('dd.roll'),
             pitch_e = $('dd.pitch'),
-            heading_e = $('dd.heading');
+            heading_e = $('dd.heading'),
+            rollAngleTarget_e = $('dd.rollAngleTarget'),
+            rollRateTarget_e = $('dd.rollRateTarget'),
+            pitchAngleTarget_e = $('dd.pitchAngleTarget'),
+            pitchRateTarget_e = $('dd.pitchRateTarget');
 
         function get_slow_data() {
             if (SerialBackend.have_sensor(FC.CONFIG.activeSensors, 'gps')) {
@@ -162,6 +166,15 @@ setupTab.initialize = function (callback) {
                 heading_e.text(i18n.getMessage('initialSetupAttitude', [FC.SENSOR_DATA.kinematics[2]]));
                 self.render3D();
                 updateInstruments();
+            });
+
+            // LEVEL mode angle/rate targets, populated by firmware when `debug_mode = LEVEL_TARGETS`
+            // (slots 0/1 = roll angle/rate target, slots 2/3 = pitch angle/rate target, in decidegrees and decidegrees/s)
+            MSP.send_message(MSPCodes.MSP2_INAV_DEBUG, false, false, function () {
+                rollAngleTarget_e.text(i18n.getMessage('initialSetupAttitude', [(FC.SENSOR_DATA.debug[0] / 10).toFixed(1)]));
+                rollRateTarget_e.text(i18n.getMessage('initialSetupLevelTargetRate', [(FC.SENSOR_DATA.debug[1] / 10).toFixed(1)]));
+                pitchAngleTarget_e.text(i18n.getMessage('initialSetupAttitude', [(FC.SENSOR_DATA.debug[2] / 10).toFixed(1)]));
+                pitchRateTarget_e.text(i18n.getMessage('initialSetupLevelTargetRate', [(FC.SENSOR_DATA.debug[3] / 10).toFixed(1)]));
             });
         }
 

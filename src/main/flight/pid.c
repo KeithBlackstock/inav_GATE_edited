@@ -726,6 +726,12 @@ static void pidLevel(const float angleTarget, pidState_t *pidState, flight_dynam
         // ANGLE_MODE, LEVEL_MODE: full angle control; LEVEL blends toward manual passthrough at the output stage
         pidState->rateTarget = angleRateTarget;
     }
+
+    // Slots 0/1 = ROLL angle/rate target, slots 2/3 = PITCH angle/rate target (decidegrees, decidegrees/s)
+    if (axis == FD_ROLL || axis == FD_PITCH) {
+        DEBUG_SET(DEBUG_LEVEL_TARGETS, axis * 2, lrintf(angleTarget));
+        DEBUG_SET(DEBUG_LEVEL_TARGETS, axis * 2 + 1, lrintf(pidState->rateTarget));
+    }
 }
 
 /* Apply angular acceleration limit to rate target to limit extreme stick inputs to respect physical capabilities of the machine */
