@@ -743,7 +743,7 @@ static void pidLevel(const float angleTarget, pidState_t *pidState, flight_dynam
     // Slots 0/1 = ROLL angle/rate target, slots 2/3 = PITCH angle/rate target (decidegrees, decidegrees/s)
     if (axis == FD_ROLL || axis == FD_PITCH) {
         DEBUG_SET(DEBUG_LEVEL_TARGETS, axis * 2, lrintf(angleTarget));
-        DEBUG_SET(DEBUG_LEVEL_TARGETS, axis * 2 + 1, lrintf(pidState->rateTarget));
+        DEBUG_SET(DEBUG_LEVEL_TARGETS, axis * 2 + 1, lrintf(pidState->rateTarget * 10.0f));
     }
 }
 
