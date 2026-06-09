@@ -681,6 +681,19 @@ static float computePidLevelTarget(flight_dynamics_index_t axis) {
              */
             angleTarget -= DEGREES_TO_DECIDEGREES(fixedWingLevelTrim);
             DEBUG_SET(DEBUG_AUTOLEVEL, 3, angleTarget * 10);
+
+            // Bank-angle pitch compensation: scale pitch target so the vertical lift
+            // contribution is preserved as the aircraft banks, maintaining altitude in turns.
+            // Formula: compensated = arcsin(sin(base_pitch) / cos(bank_angle))
+            // Only active in LEVEL mode; cos(bank) clamped to 0.1 (~84 deg) to avoid overflow.
+            if (FLIGHT_MODE(LEVEL_MODE)) {
+                const float bankRad = fabsf(DECIDEGREES_TO_RADIANS(attitude.raw[FD_ROLL]));
+                const float cosBankAngle = cos_approx(bankRad);
+                if (cosBankAngle > 0.1f) {
+                    const float sinCompensated = constrainf(sinf(DECIDEGREES_TO_RADIANS(angleTarget)) / cosBankAngle, -1.0f, 1.0f);
+                    angleTarget = RADIANS_TO_DECIDEGREES(asinf(sinCompensated));
+                }
+            }
         }
     }
 
