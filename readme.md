@@ -16,13 +16,15 @@ docs/development/msp/inav_enums.json and inav_enums_ref.md: update MSP enum docs
 
 LEVEL is an AUX-selectable flight mode that blends ANGLE (self-leveling) with MANUAL (direct passthrough — no PID) based on stick deflection. At center stick the aircraft fully self-levels; at full stick control passes through directly with no stabilization. This is distinct from HORIZON, which blends ANGLE with ACRO (rate-controlled) — at full stick HORIZON still applies rate PID, whereas LEVEL is intended to hand off to completely unassisted manual control.
 
+LEVEL includes bank-angle pitch compensation: the pitch `angleTarget` is scaled so that the vertical lift contribution remains constant as the aircraft banks, preserving altitude maintenance through turns. The formula applied in `computePidLevelTarget()` is `arcsin(sin(base_pitch) / cos(bank_angle))`, where `base_pitch` is the pilot's commanded pitch plus `fixedWingLevelTrim`. At wings level this has no effect; at 30° bank a 5° trim becomes ~5.8°, at 45° ~7.1°, at 60° ~10°. Bank angles beyond ~84° are clamped to avoid overflow. The compensation is also active under RECALL, which auto-enables LEVEL_MODE.
+
 Key modified files:
 
 src/main/fc/rc_modes.h: adds BOXLEVEL (Box ID 61).
 src/main/fc/fc_msp_box.c: exposes LEVEL as an MSP/AUX mode with permanent ID 71.
 src/main/fc/runtime_config.h: adds LEVEL_MODE flag (bit 20).
 src/main/fc/runtime_config.c: activates LEVEL_MODE when BOXLEVEL is selected.
-src/main/flight/pid.c: routes LEVEL through pidLevel() with horizonRateMagnitude blend; extends ANGLE/HORIZON checks to include LEVEL throughout pidController().
+src/main/flight/pid.c: routes LEVEL through pidLevel() with horizonRateMagnitude blend; extends ANGLE/HORIZON checks to include LEVEL throughout pidController(); adds bank-angle pitch compensation in computePidLevelTarget().
 external-configurator_mod/js/flightModes.js: adds LEVEL to the configurator AUX mode list.
 
 ---
