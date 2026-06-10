@@ -57,9 +57,13 @@ Setting `dive_max_dive_angle = 0` cuts throttle to idle at any nose-down pitch.
 
 # RECALL Mode Implementation
 
-RECALL is an AUX-selectable proportional 2D GPS steering mode that banks the aircraft toward the home waypoint using LEVEL mode's attitude control. Unlike NAV RTH, it is a minimalist steering-only mode — no altitude, energy, or navigation management. It computes the bearing and heading error to home, commands a bank angle proportional to that error (scaled by `recall_steering_gain` and constrained to LEVEL's `max_angle_inclination_rll`), and zeroes pitch and yaw. The pilot retains throttle authority only.
+RECALL is an AUX-selectable proportional 2D GPS steering mode that banks the aircraft toward waypoint #1 of the loaded mission using LEVEL mode's attitude control. Unlike NAV RTH, it is a minimalist steering-only mode — no altitude, energy, or navigation management, and no mission/waypoint-sequence awareness beyond WP1. It computes the bearing and heading error to WP1 (ignoring WP1's altitude), commands a bank angle proportional to that error (scaled by `recall_steering_gain` and constrained to LEVEL's `max_angle_inclination_rll`), and zeroes pitch and yaw. The pilot retains throttle authority only.
 
-Requires GPS fix, home position, and accelerometer. Auto-enables LEVEL_MODE and punches through the MANUAL_MODE exclusion while active; HEADFREE is blocked when RECALL is active.
+The intended workflow is to designate a single waypoint in the Mission Control tab — that WP becomes RECALL's "home". RECALL does not use INAV's armed-position home logic at all (no dependency on `GPS_FIX_HOME` / `GPS_directionToHome`); the global home-position system is untouched and still backs RTH/safehomes/etc. as usual.
+
+If no mission is loaded (or it's invalid), RECALL has no destination and computes zero heading error, flying straight ahead wings-level via LEVEL mode. This is not advisable for actual recovery, but it's apparent in flight when RECALL isn't steering anywhere, so the pilot can verify a WP1 is loaded before relying on it.
+
+Requires GPS fix and accelerometer. Auto-enables LEVEL_MODE and punches through the MANUAL_MODE exclusion while active; HEADFREE is blocked when RECALL is active.
 
 ## Configuration
 

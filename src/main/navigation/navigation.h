@@ -756,6 +756,10 @@ bool geoConvertLocalToGeodetic(gpsLocation_t *llh, const gpsOrigin_t *origin, co
 float geoCalculateMagDeclination(const gpsLocation_t * llh); // degrees units
 // Select absolute or relative altitude based on WP mission flag setting
 geoAltitudeConversionMode_e waypointMissionAltConvMode(geoAltitudeDatumFlag_e datumFlag);
+// calculateBearingToDestination returns the bearing (centidegrees, [0, 36000))
+// from the current estimated position to destinationPos, given in local
+// coordinates (e.g. as produced by geoConvertGeodeticToLocalOrigin).
+int32_t calculateBearingToDestination(const fpVector3_t * destinationPos);
 
 void calculateAndSetActiveWaypointToLocalPosition(const fpVector3_t *pos);
 bool isWaypointReached(const fpVector3_t * waypointPos, const int32_t * waypointBearing);
