@@ -5852,6 +5852,16 @@ Exponential value used for the YAW axis by all the stabilized flights modes (all
 
 ---
 
+### recall_drop_speed_threshold
+
+Descent rate that exits RECALL and returns control to the pilot, in cm/s [500-5000]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 1500 | 500 | 5000 |
+
+---
+
 ### recall_steering_gain
 
 Proportional gain for RECALL heading-error steering (scaled by 0.01, so 50 = 0.50) [1-200]
