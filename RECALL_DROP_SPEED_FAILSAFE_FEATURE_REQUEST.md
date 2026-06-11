@@ -62,33 +62,3 @@ checkRecallDropSpeedFailsafe();  // Add after RECALL steering
 <input type="number" id="recall_drop_speed_threshold" 
        step="100" min="500" max="5000" data-setting="recall_drop_speed_threshold" />
 <label>Drop Speed Threshold (cm/s)</label>
-```
-
-## Usage
-1. Set threshold via CLI: `set recall_drop_speed_threshold = 1500`
-2. Enable RECALL mode during flight
-3. Failsafe activates automatically if descent exceeds threshold
-4. Pilot retains throttle control throughout
-
-## Tuning Guide
-- **Conservative (500-1000)**: Earlier intervention, may trigger in turbulence
-- **Balanced (1500)**: Default, good for most aircraft
-- **Aggressive (2000-5000)**: Only severe descents
-
-## Limitations
-- Requires functioning barometer
-- Barometer lag may delay detection
-- Turbulence may cause false triggers
-- Pilot must still manage throttle
-
-## Future Enhancements
-- Hysteresis (separate exit threshold)
-- Time delay before triggering
-- Automatic pitch correction
-- Telemetry/blackbox logging
-
----
-**Status**: Feature Request  
-**Priority**: Medium  
-**Complexity**: Low-Medium  
-**Estimated Time**: 4-8 hours
