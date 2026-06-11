@@ -17,44 +17,16 @@
 
 #include "sensors/sensors.h"
 
-PG_REGISTER_WITH_RESET_TEMPLATE(recallConfig_t, recallConfig, PG_RECALL_CONFIG, 1);
+PG_REGISTER_WITH_RESET_TEMPLATE(recallConfig_t, recallConfig, PG_RECALL_CONFIG, 2);
 PG_RESET_TEMPLATE(recallConfig_t, recallConfig,
-    .steeringGain = 50,
-    .dropSpeedThreshold = 1500
+    .steeringGain = 50
 );
-
-// Latched once an excessive descent rate is detected during RECALL. While
-// latched, isRecallModeAvailable() reports false, exiting RECALL and handing
-// control back to the pilot's selected mode. Cleared when the pilot
-// deactivates the RECALL switch.
-static bool dropSpeedFailsafeLatched = false;
 
 bool isRecallModeAvailable(void)
 {
-    if (dropSpeedFailsafeLatched) {
-        return false;
-    }
-
     return IS_RC_MODE_ACTIVE(BOXRECALL) &&
            sensors(SENSOR_ACC) &&
            STATE(GPS_FIX);
-}
-
-void checkRecallDropSpeedFailsafe(void)
-{
-    if (!IS_RC_MODE_ACTIVE(BOXRECALL)) {
-        dropSpeedFailsafeLatched = false;
-        return;
-    }
-
-    if (dropSpeedFailsafeLatched || !isRecallModeAvailable()) {
-        return;
-    }
-
-    const float descentRate = getEstimatedActualVelocity(Z);  // cm/s, negative = down
-    if (descentRate < -(float)recallConfig()->dropSpeedThreshold) {
-        dropSpeedFailsafeLatched = true;
-    }
 }
 
 // getRecallTargetBearing looks up waypoint #1 of the loaded mission and, if
@@ -107,7 +79,10 @@ void applyRecallSteering(void)
         maxBankDeciDegrees
     );
 
+    // Roll is the only axis RECALL manages autonomously. Pitch and yaw are
+    // left as the pilot's stick inputs (interpreted as pitch angle by
+    // LEVEL_MODE and as rate-based rudder, respectively), so the pilot can
+    // manage airspeed/AoA throughout RECALL and is less likely to be
+    // surprised by a wild departure.
     rcCommand[ROLL] = pidAngleToRcCommand(desiredBankDeciDegrees, pidProfile()->max_angle_inclination[FD_ROLL]);
-    rcCommand[PITCH] = 0;
-    rcCommand[YAW] = 0;
 }

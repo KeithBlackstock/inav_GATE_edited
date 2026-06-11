@@ -4557,10 +4557,3 @@ groups:
         field: steeringGain
         min: 1
         max: 200
-
-      - name: recall_drop_speed_threshold
-        description: "Descent rate that exits RECALL and returns control to the pilot, in cm/s [500-5000]"
-        default_value: 1500
-        field: dropSpeedThreshold
-        min: 500
-        max: 5000

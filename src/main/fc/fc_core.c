@@ -693,8 +693,6 @@ void processRx(timeUs_t currentTimeUs)
     bool emergRearmAngleEnforce = STATE(MULTIROTOR) && emergRearmStabiliseTimeout > US2MS(currentTimeUs);
     bool autoEnableAngle = failsafeRequiresAngleMode() || navigationRequiresAngleMode() || emergRearmAngleEnforce;
 
-    checkRecallDropSpeedFailsafe();
-
     /* Disable stabilised modes initially, will be enabled as required with priority ANGLE > HORIZON > LEVEL > ANGLEHOLD
      * MANUAL mode has priority over these modes except when ANGLE auto enabled */
     DISABLE_FLIGHT_MODE(ANGLE_MODE);
