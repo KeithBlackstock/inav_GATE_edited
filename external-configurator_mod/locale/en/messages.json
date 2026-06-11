@@ -6596,6 +6596,12 @@
     "configurationRecallSteeringGainHelp": {
         "message": "Proportional gain for RECALL heading-error steering (1-200, scaled by 0.01). Higher values command more bank for the same heading error."
     },
+    "configurationRecallDropSpeedThreshold": {
+        "message": "Drop Speed Threshold"
+    },
+    "configurationRecallDropSpeedThresholdHelp": {
+        "message": "Descent rate, in cm/s, that exits RECALL and returns control to the pilot's selected mode (500-5000). Re-arms when the RECALL switch is deactivated and reactivated."
+    },
     "auxiliaryModeGATED": {
         "message": "GATED"
     },

@@ -17,16 +17,44 @@
 
 #include "sensors/sensors.h"
 
-PG_REGISTER_WITH_RESET_TEMPLATE(recallConfig_t, recallConfig, PG_RECALL_CONFIG, 0);
+PG_REGISTER_WITH_RESET_TEMPLATE(recallConfig_t, recallConfig, PG_RECALL_CONFIG, 1);
 PG_RESET_TEMPLATE(recallConfig_t, recallConfig,
-    .steeringGain = 50
+    .steeringGain = 50,
+    .dropSpeedThreshold = 1500
 );
+
+// Latched once an excessive descent rate is detected during RECALL. While
+// latched, isRecallModeAvailable() reports false, exiting RECALL and handing
+// control back to the pilot's selected mode. Cleared when the pilot
+// deactivates the RECALL switch.
+static bool dropSpeedFailsafeLatched = false;
 
 bool isRecallModeAvailable(void)
 {
+    if (dropSpeedFailsafeLatched) {
+        return false;
+    }
+
     return IS_RC_MODE_ACTIVE(BOXRECALL) &&
            sensors(SENSOR_ACC) &&
            STATE(GPS_FIX);
+}
+
+void checkRecallDropSpeedFailsafe(void)
+{
+    if (!IS_RC_MODE_ACTIVE(BOXRECALL)) {
+        dropSpeedFailsafeLatched = false;
+        return;
+    }
+
+    if (dropSpeedFailsafeLatched || !isRecallModeAvailable()) {
+        return;
+    }
+
+    const float descentRate = getEstimatedActualVelocity(Z);  // cm/s, negative = down
+    if (descentRate < -(float)recallConfig()->dropSpeedThreshold) {
+        dropSpeedFailsafeLatched = true;
+    }
 }
 
 // getRecallTargetBearing looks up waypoint #1 of the loaded mission and, if
