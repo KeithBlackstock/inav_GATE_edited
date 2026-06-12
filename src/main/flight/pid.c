@@ -641,6 +641,12 @@ int16_t angleFreefloatDeadband(int16_t deadband, flight_dynamics_index_t axis)
     }
 }
 
+// Roll angle target computed this loop, cached so the pitch axis's
+// bank-angle compensation (computed afterwards, since FD_ROLL < FD_PITCH)
+// can react to the commanded bank rather than the airframe's current
+// attitude.
+static float rollAngleTargetDeciDegrees = 0.0f;
+
 static float computePidLevelTarget(flight_dynamics_index_t axis) {
     // This is ROLL/PITCH, run ANGLE/HORIZON controllers
 
@@ -653,6 +659,10 @@ static float computePidLevelTarget(flight_dynamics_index_t axis) {
 #else
     float angleTarget = pidRcCommandToAngle(rcCommand[axis], maxBankAngle);
 #endif
+
+    if (axis == FD_ROLL) {
+        rollAngleTargetDeciDegrees = angleTarget;
+    }
 
     if (STATE(AIRPLANE)) {
         // Automatically pitch down if the throttle is manually controlled and reduced below cruise throttle
@@ -686,8 +696,11 @@ static float computePidLevelTarget(flight_dynamics_index_t axis) {
             // contribution is preserved as the aircraft banks, maintaining altitude in turns.
             // Formula: compensated = arcsin(sin(base_pitch) / cos(bank_angle))
             // Only active in LEVEL mode; cos(bank) clamped to 0.1 (~84 deg) to avoid overflow.
+            // Uses the commanded roll *target* (not the current attitude) so the
+            // compensation is proactive - it applies as soon as a bank is
+            // commanded, rather than lagging behind the airframe's roll response.
             if (FLIGHT_MODE(LEVEL_MODE)) {
-                const float bankRad = fabsf(DECIDEGREES_TO_RADIANS(attitude.raw[FD_ROLL]));
+                const float bankRad = fabsf(DECIDEGREES_TO_RADIANS(rollAngleTargetDeciDegrees));
                 const float cosBankAngle = cos_approx(bankRad);
                 if (cosBankAngle > 0.1f) {
                     const float sinCompensated = constrainf(sinf(DECIDEGREES_TO_RADIANS(angleTarget)) / cosBankAngle, -1.0f, 1.0f);
