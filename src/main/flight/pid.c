@@ -1309,7 +1309,7 @@ void FAST_CODE pidController(float dT)
     }
 
     // Step 3: Run control for ANGLE_MODE, HORIZON_MODE, LEVEL_MODE and ANGLEHOLD_MODE
-    const float horizonRateMagnitude = (FLIGHT_MODE(HORIZON_MODE) || (FLIGHT_MODE(LEVEL_MODE) && !isRecallModeAvailable())) ? calcHorizonRateMagnitude() : 0.0f;
+    const float horizonRateMagnitude = (FLIGHT_MODE(HORIZON_MODE) || FLIGHT_MODE(LEVEL_MODE)) ? calcHorizonRateMagnitude() : 0.0f;
     angleHoldIsLevel = false;
 
     for (uint8_t axis = FD_ROLL; axis <= FD_PITCH; axis++) {
@@ -1361,9 +1361,12 @@ void FAST_CODE pidController(float dT)
         pidControllerApplyFn(&pidState[axis], dT, dT_inv);
     }
 
-    // Step 5: LEVEL mode output blend — fade from angle PID toward direct RC passthrough as stick deflects
+    // Step 5: LEVEL mode output blend — fade from angle PID toward direct RC passthrough as stick deflects.
+    // In RECALL, roll is commandeered for autonomous steering, so it stays pure angle-PID
+    // (no fade toward rcCommand[ROLL]); pitch remains pilot-controlled and gets the normal blend.
     if (FLIGHT_MODE(LEVEL_MODE) && horizonRateMagnitude > 0.0f) {
-        for (int axis = FD_ROLL; axis <= FD_PITCH; axis++) {
+        const flight_dynamics_index_t firstBlendAxis = isRecallModeAvailable() ? FD_PITCH : FD_ROLL;
+        for (int axis = firstBlendAxis; axis <= FD_PITCH; axis++) {
             axisPID[axis] = lrintf((1.0f - horizonRateMagnitude) * (float)axisPID[axis] + horizonRateMagnitude * (float)rcCommand[axis]);
         }
     }
