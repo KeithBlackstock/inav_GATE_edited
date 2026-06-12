@@ -57,13 +57,15 @@ Setting `dive_max_dive_angle = 0` cuts throttle to idle at any nose-down pitch.
 
 # RECALL Mode Implementation
 
-RECALL is an AUX-selectable proportional 2D GPS steering mode that banks the aircraft toward waypoint #1 of the loaded mission using LEVEL mode's attitude control. Unlike NAV RTH, it is a minimalist steering-only mode — no altitude, energy, or navigation management, and no mission/waypoint-sequence awareness beyond WP1. It computes the bearing and heading error to WP1 (ignoring WP1's altitude), commands a bank angle proportional to that error (scaled by `recall_steering_gain` and constrained to LEVEL's `max_angle_inclination_rll`), and zeroes pitch and yaw. The pilot retains throttle authority only.
+RECALL is an AUX-selectable, pilot-supervised roll-steering mode: it autonomously banks the aircraft along a sequential pure-pursuit route through the loaded mission's waypoints (starting at WP1), using LEVEL mode's attitude control, while the pilot retains full pitch, yaw, and throttle authority throughout. The pilot can correct airspeed/AoA, adjust heading via rudder, or simply disengage and take over at any time - RECALL only ever takes the roll axis.
 
-The intended workflow is to designate a single waypoint in the Mission Control tab — that WP becomes RECALL's "home". RECALL does not use INAV's armed-position home logic at all (no dependency on `GPS_FIX_HOME` / `GPS_directionToHome`); the global home-position system is untouched and still backs RTH/safehomes/etc. as usual.
+Unlike NAV RTH/NAV_WP_MODE, RECALL is not a navigation FSM state - it has no altitude, energy, or mission-action handling, and never touches `posControl.navState` or `posControl.activeWaypointIndex`. Each loop it computes the bearing and heading error to its current target waypoint (ignoring altitude), commands a bank angle proportional to that error (scaled by `recall_steering_gain` and constrained to LEVEL's `max_angle_inclination_rll`), and writes only `rcCommand[ROLL]`.
 
-If no mission is loaded (or it's invalid), RECALL has no destination and computes zero heading error, flying straight ahead wings-level via LEVEL mode. This is not advisable for actual recovery, but it's apparent in flight when RECALL isn't steering anywhere, so the pilot can verify a WP1 is loaded before relying on it.
+RECALL maintains its own waypoint cursor, independent of `NAV_WP_MODE`/RTH state. On engagement it starts at WP1 and advances to the next waypoint once the current one is reached (or missed, by the same distance/bearing-divergence test `NAV_WP_MODE` uses). Only plain `NAV_WP_ACTION_WAYPOINT` entries are understood; reaching the end of the route, or encountering any other action type, ends route-following - RECALL continues providing roll stabilization (wings-level, zero heading-error target) but stops steering toward a point. Disengaging and re-engaging RECALL always restarts the route from WP1.
 
-Requires GPS fix and accelerometer. Auto-enables LEVEL_MODE and punches through the MANUAL_MODE exclusion while active; HEADFREE is blocked when RECALL is active.
+If no mission is loaded (or it's invalid), RECALL has no route and behaves the same as "end of route": wings-level via LEVEL mode, with no heading correction. This is not advisable for actual recovery, but it's apparent in flight when RECALL isn't steering anywhere, so the pilot can verify a mission is loaded before relying on it.
+
+Requires GPS fix and accelerometer. Auto-enables LEVEL_MODE (whose bank-angle pitch compensation reacts proactively to RECALL's commanded roll target) and punches through the MANUAL_MODE exclusion while active; HEADFREE is blocked when RECALL is active.
 
 ## Configuration
 
@@ -73,7 +75,8 @@ set recall_steering_gain = 50    # Gain applied to heading error to produce bank
 
 ## Key Files
 
-- `src/main/flight/recall_mode.c` / `.h` — proportional heading-error steering logic and PG_RECALL_CONFIG registration
+- `src/main/flight/recall_mode.c` / `.h` — sequential pure-pursuit steering logic, RECALL's own waypoint cursor, and PG_RECALL_CONFIG registration
+- `src/main/flight/pid.c` — `computePidLevelTarget()`'s LEVEL-mode bank-angle pitch compensation, which RECALL relies on while banking
 - `src/main/fc/fc_core.c` — calls `applyRecallSteering()` in the RC command path
 - `src/main/fc/rc_modes.h` — adds BOXRECALL (ID 64)
 - `src/main/fc/fc_msp_box.c` — exposes RECALL as an MSP/AUX mode with permanent ID 74
