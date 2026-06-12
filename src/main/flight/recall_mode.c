@@ -22,6 +22,15 @@ PG_RESET_TEMPLATE(recallConfig_t, recallConfig,
     .steeringGain = 50
 );
 
+// RECALL's own sequential waypoint cursor. Entirely separate from
+// posControl.activeWaypointIndex/posControl.navState (which belong to
+// NAV_WP_MODE/RTH) - RECALL never becomes a navigationFSMState_t and never
+// touches the shared mission-progression state.
+static bool recallEngaged;
+static uint8_t recallWaypointIndex;
+static int32_t recallLegBearingCentidegrees;
+static bool recallRouteActive;
+
 bool isRecallModeAvailable(void)
 {
     return IS_RC_MODE_ACTIVE(BOXRECALL) &&
@@ -29,46 +38,80 @@ bool isRecallModeAvailable(void)
            STATE(GPS_FIX);
 }
 
-// getRecallTargetBearing looks up waypoint #1 of the loaded mission and, if
-// present, returns the bearing toward it (centidegrees, [0, 36000)). Waypoint
-// #1 is treated as RECALL's "home" - the altitude component is ignored.
-// Returns false if no mission is loaded, leaving *bearingCentidegrees
-// untouched.
-static bool getRecallTargetBearing(int32_t *bearingCentidegrees)
+// getWaypointLocalPosition converts waypoint wpNumber's lat/lon to the local
+// coordinate frame (altitude ignored, per RECALL's existing behavior).
+// Returns false if the conversion fails (e.g. no GPS origin yet).
+static bool getWaypointLocalPosition(uint8_t wpNumber, fpVector3_t *localPos)
 {
-    if (!isWaypointListValid() || getWaypointCount() < 1) {
-        return false;
-    }
-
     navWaypoint_t wp;
-    getWaypoint(1, &wp);
+    getWaypoint(wpNumber, &wp);
 
     const gpsLocation_t wpLLH = { .lat = wp.lat, .lon = wp.lon, .alt = wp.alt };
-    fpVector3_t wpLocalPos;
-    if (!geoConvertGeodeticToLocalOrigin(&wpLocalPos, &wpLLH, GEO_ALT_RELATIVE)) {
+    return geoConvertGeodeticToLocalOrigin(localPos, &wpLLH, GEO_ALT_RELATIVE);
+}
+
+// updateRecallLegTarget snapshots the initial bearing to recallWaypointIndex
+// for the upcoming isWaypointReached() check. Returns false - ending the
+// route, RECALL falls back to wings-level-ahead - if recallWaypointIndex is
+// not a plain NAV_WP_ACTION_WAYPOINT entry (past the end of the mission, or
+// any other action type) or its position can't be resolved.
+static bool updateRecallLegTarget(void)
+{
+    navWaypoint_t wp;
+    getWaypoint(recallWaypointIndex, &wp);
+    if (wp.action != NAV_WP_ACTION_WAYPOINT) {
         return false;
     }
 
-    *bearingCentidegrees = calculateBearingToDestination(&wpLocalPos);
+    fpVector3_t targetPos;
+    if (!getWaypointLocalPosition(recallWaypointIndex, &targetPos)) {
+        return false;
+    }
+
+    recallLegBearingCentidegrees = calculateBearingToDestination(&targetPos);
     return true;
 }
 
 void applyRecallSteering(void)
 {
     if (!isRecallModeAvailable()) {
+        recallEngaged = false;
         return;
     }
 
-    int32_t targetBearingCentidegrees;
-    int16_t headingErrorDegrees = 0;
-    if (getRecallTargetBearing(&targetBearingCentidegrees)) {
-        const int16_t headingDegrees = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
-        const int16_t targetBearingDegrees = targetBearingCentidegrees / 100;
-        headingErrorDegrees = wrap_180(targetBearingDegrees - headingDegrees);
+    if (!recallEngaged) {
+        // Rising edge: (re)start the route from waypoint #1. Matches the
+        // existing "no resume-from-last-leg" preference - disengaging and
+        // re-engaging RECALL always restarts the sequence.
+        recallEngaged = true;
+        recallWaypointIndex = 1;
+        recallRouteActive = updateRecallLegTarget();
     }
-    // If no waypoint #1 is loaded, headingErrorDegrees stays 0: RECALL flies
-    // straight ahead (wings level via LEVEL mode) rather than falling back
-    // to the old home-position logic.
+
+    int16_t headingErrorDegrees = 0;
+
+    if (recallRouteActive) {
+        fpVector3_t targetPos;
+        if (!getWaypointLocalPosition(recallWaypointIndex, &targetPos)) {
+            recallRouteActive = false;
+        } else if (isWaypointReached(&targetPos, &recallLegBearingCentidegrees)) {
+            recallWaypointIndex++;
+            recallRouteActive = updateRecallLegTarget();
+            if (recallRouteActive) {
+                getWaypointLocalPosition(recallWaypointIndex, &targetPos);
+            }
+        }
+
+        if (recallRouteActive) {
+            const int32_t targetBearingCentidegrees = calculateBearingToDestination(&targetPos);
+            const int16_t headingDegrees = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+            const int16_t targetBearingDegrees = targetBearingCentidegrees / 100;
+            headingErrorDegrees = wrap_180(targetBearingDegrees - headingDegrees);
+        }
+    }
+    // If the route is inactive (no mission, mission complete, or a
+    // non-WAYPOINT action encountered), headingErrorDegrees stays 0: RECALL
+    // flies straight ahead (wings level via LEVEL mode).
 
     const float gain = (float)recallConfig()->steeringGain * 0.01f;
 
