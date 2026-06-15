@@ -6582,19 +6582,19 @@
         "message": "Proportional gain for speed controller (1-200, scaled by 0.01). Higher values = more aggressive throttle response. Start with 50-100 and tune based on aircraft response."
     },
     "auxiliaryModeRECALL": {
-        "message": "RECALL"
+        "message": "PATH"
     },
     "auxiliaryModeRECALLDescription": {
-        "message": "GPS heading-error steering mode that banks toward home using LEVEL-mode attitude limits. Roll is autonomously managed; pilot pitch and yaw inputs remain active, and throttle remains manual. Requires GPS fix, home position, and accelerometer."
+        "message": "Pilot Assisted Target Heading: autonomously steers through the loaded mission's waypoints via sequential pure-pursuit, commanding bank angle proportional to heading error. Roll is autonomously managed (SAFE — pilot pitch, yaw, and throttle always pass directly from the sticks). Requires GPS fix and accelerometer."
     },
     "configurationRecall": {
-        "message": "RECALL Mode Settings"
+        "message": "PATH Mode Settings"
     },
     "configurationRecallSteeringGain": {
         "message": "Steering Gain"
     },
     "configurationRecallSteeringGainHelp": {
-        "message": "Proportional gain for RECALL heading-error steering (1-200, scaled by 0.01). Higher values command more bank for the same heading error."
+        "message": "Proportional gain for PATH heading-error steering (1-200, scaled by 0.01). Higher values command more bank for the same heading error."
     },
     "auxiliaryModeGATED": {
         "message": "GATED"
