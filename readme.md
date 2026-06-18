@@ -55,6 +55,8 @@ set path_steering_gain = 50    # Gain applied to heading error to produce bank a
 set path_calm_drop_speed = 200 # Descent rate (cm/s) that triggers CALM wings-level hold; 0 disables (0-1000, default 200)
 ```
 
+See [docs/CALM.md](docs/CALM.md) for full CALM documentation.
+
 ## Key Files
 
 - `src/main/flight/path_mode.c` / `.h` — sequential pure-pursuit steering logic, PATH's own waypoint cursor, and PG_PATH_CONFIG registration
