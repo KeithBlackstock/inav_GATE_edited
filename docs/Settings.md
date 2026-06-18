@@ -5562,6 +5562,16 @@ Video system used. Possible values are `AUTO`, `PAL`, `NTSC`, `HDZERO`, 'DJIWTF'
 
 ---
 
+### path_calm_drop_speed
+
+Descent rate (cm/s) that triggers CALM wings-level hold; 0 disables CALM [0-1000]
+
+| Default | Min | Max |
+| --- | --- | --- |
+| 200 | 0 | 1000 |
+
+---
+
 ### path_steering_gain
 
 Proportional gain for PATH heading-error steering (scaled by 0.01, so 50 = 0.50) [1-200]

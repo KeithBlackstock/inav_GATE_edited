@@ -4540,3 +4540,9 @@ groups:
         field: steeringGain
         min: 1
         max: 200
+      - name: path_calm_drop_speed
+        description: "Descent rate (cm/s) that triggers CALM wings-level hold; 0 disables CALM [0-1000]"
+        default_value: 200
+        field: calmDropSpeed
+        min: 0
+        max: 1000

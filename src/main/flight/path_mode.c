@@ -17,9 +17,10 @@
 
 #include "sensors/sensors.h"
 
-PG_REGISTER_WITH_RESET_TEMPLATE(pathConfig_t, pathConfig, PG_PATH_CONFIG, 2);
+PG_REGISTER_WITH_RESET_TEMPLATE(pathConfig_t, pathConfig, PG_PATH_CONFIG, 3);
 PG_RESET_TEMPLATE(pathConfig_t, pathConfig,
-    .steeringGain = 50
+    .steeringGain  = 50,
+    .calmDropSpeed = 200
 );
 
 // PATH's own sequential waypoint cursor. Entirely separate from
@@ -30,6 +31,7 @@ static bool pathEngaged;
 static uint8_t pathWaypointIndex;
 static int32_t pathLegBearingCentidegrees;
 static bool pathRouteActive;
+static bool pathCalmActive;
 
 bool isPathModeAvailable(void)
 {
@@ -86,11 +88,23 @@ void applyPathSteering(void)
         pathEngaged = true;
         pathWaypointIndex = 1;
         pathRouteActive = updatePathLegTarget();
+        pathCalmActive = false;
+    }
+
+    // CALM: if descent rate exceeds threshold, hold wings-level until recovery.
+    // Hysteresis of 50 cm/s prevents rapid toggling at the boundary.
+    if (pathConfig()->calmDropSpeed > 0) {
+        const float vertVelocity = getEstimatedActualVelocity(Z);
+        if (!pathCalmActive && vertVelocity < -(float)pathConfig()->calmDropSpeed) {
+            pathCalmActive = true;
+        } else if (pathCalmActive && vertVelocity > -(float)(pathConfig()->calmDropSpeed - 50)) {
+            pathCalmActive = false;
+        }
     }
 
     int16_t headingErrorDegrees = 0;
 
-    if (pathRouteActive) {
+    if (!pathCalmActive && pathRouteActive) {
         fpVector3_t targetPos;
         if (!getWaypointLocalPosition(pathWaypointIndex, &targetPos)) {
             pathRouteActive = false;
@@ -109,9 +123,9 @@ void applyPathSteering(void)
             headingErrorDegrees = wrap_180(targetBearingDegrees - headingDegrees);
         }
     }
-    // If the route is inactive (no mission, mission complete, or a
-    // non-WAYPOINT action encountered), headingErrorDegrees stays 0: PATH
-    // flies straight ahead (wings level via LEVEL mode).
+    // headingErrorDegrees stays 0 when the route is inactive (no mission,
+    // mission complete, or non-WAYPOINT action) OR when CALM is active:
+    // both cases command wings-level via LEVEL mode.
 
     const float gain = (float)pathConfig()->steeringGain * 0.01f;
 

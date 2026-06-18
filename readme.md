@@ -52,6 +52,7 @@ Requires GPS fix and accelerometer. Auto-enables LEVEL_MODE (whose bank-angle pi
 
 ```
 set path_steering_gain = 50    # Gain applied to heading error to produce bank angle, scaled by 0.01 (1-200, default 50)
+set path_calm_drop_speed = 200 # Descent rate (cm/s) that triggers CALM wings-level hold; 0 disables (0-1000, default 200)
 ```
 
 ## Key Files
@@ -64,24 +65,3 @@ set path_steering_gain = 50    # Gain applied to heading error to produce bank a
 - `src/main/config/parameter_group_ids.h` — adds PG_PATH_CONFIG (1049)
 - `src/main/fc/settings.yaml` — adds `path_steering_gain`
 
----
-
-# Feature Requests
-
-## CALM — Course Abort for Leveling Motion
-
-**Motivation.** PATH steers by commanding bank angle proportional to heading error. At high `path_steering_gain` values, or when the bank-angle pitch compensation in LEVEL mode is insufficient to fully offset the altitude loss of a banked turn, the aircraft can lose altitude while pursuing waypoints. CALM is a "chill out" safeguard: when the barometer detects a descent rate exceeding a pilot-configured threshold, PATH temporarily abandons waypoint pursuit and instead drives the aircraft wings-level until the descent rate recovers.
-
-**Trigger condition.** A new parameter `path_calm_drop_speed` (cm/s, suggested default 200, range 0–1000) defines the descent rate threshold. CALM activates when the estimated vertical velocity (from the baro/position estimator) exceeds this value downward, and clears when descent rate falls back below the threshold (a small hysteresis margin, e.g. 50 cm/s, would prevent oscillation at the boundary).
-
-**Behavior while CALM is active.** PATH remains engaged — it does not exit the mode, does not reset the waypoint cursor, and LEVEL_MODE stays active. Roll authority stays with PATH rather than returning to the pilot. The only change is that `headingErrorDegrees` is forced to zero instead of being computed from the current waypoint bearing. Since the existing code already drives `desiredBankDeciDegrees = 0` when `headingErrorDegrees = 0` (the same path taken at end-of-route), this gives wings-level roll stabilization via LEVEL mode with no new control logic. On recovery, PATH resumes normal waypoint pursuit from whatever waypoint was current when CALM activated — it does not restart from WP1.
-
-**Implementation sketch.**
-
-In `path_mode.c`:
-- Add `static bool pathCalmActive` alongside the existing static state.
-- Add a `path_calm_drop_speed` field to `pathConfig_t` and `settings.yaml`.
-- At the top of `applyPathSteering()`, read the estimated vertical velocity (e.g. `getEstimatedActualVelocity(Z)`) and update `pathCalmActive` with hysteresis.
-- After the `pathEngaged` rising-edge block, insert: `if (pathCalmActive) { headingErrorDegrees = 0; }` before the waypoint-bearing computation, then skip the waypoint block. The rest of the function (gain scaling, `rcCommand[ROLL]` assignment) runs unchanged.
-
-No changes are needed in `pid.c`, `fc_core.c`, or the configurator beyond the new parameter.
