@@ -31,7 +31,6 @@ static bool pathEngaged;
 static uint8_t pathWaypointIndex;
 static int32_t pathLegBearingCentidegrees;
 static bool pathRouteActive;
-static bool pathCalmActive;
 
 bool isPathModeAvailable(void)
 {
@@ -88,19 +87,10 @@ void applyPathSteering(void)
         pathEngaged = true;
         pathWaypointIndex = 1;
         pathRouteActive = updatePathLegTarget();
-        pathCalmActive = false;
     }
 
-    // CALM: if descent rate exceeds threshold, hold wings-level until recovery.
-    // Hysteresis of 50 cm/s prevents rapid toggling at the boundary.
-    if (pathConfig()->calmDropSpeed > 0) {
-        const float vertVelocity = getEstimatedActualVelocity(Z);
-        if (!pathCalmActive && vertVelocity < -(float)pathConfig()->calmDropSpeed) {
-            pathCalmActive = true;
-        } else if (pathCalmActive && vertVelocity > -(float)(pathConfig()->calmDropSpeed - 50)) {
-            pathCalmActive = false;
-        }
-    }
+    const bool pathCalmActive = (pathConfig()->calmDropSpeed > 0) &&
+                                (getEstimatedActualVelocity(Z) < -(float)pathConfig()->calmDropSpeed);
 
     int16_t headingErrorDegrees = 0;
 
